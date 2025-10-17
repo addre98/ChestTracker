@@ -1,9 +1,12 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +56,7 @@ public class StringSelectorWidget<T> extends AbstractWidget {
 
     @Override
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blitSprite(RenderType::guiTextured, GuiUtil.SEARCH_BAR_SPRITE, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.SEARCH_BAR_SPRITE, this.getX(), this.getY(), this.getWidth(), this.getHeight());
         int i = 0;
         var hoveredIndex = getHoveredIndex(mouseX, mouseY);
         lastHovered = null;
@@ -61,8 +64,9 @@ public class StringSelectorWidget<T> extends AbstractWidget {
             if (i >= this.getHeight() / ROW_HEIGHT) break;
             boolean hovered = Objects.equals(i, hoveredIndex);
             if (hovered) lastHovered = entry.getKey();
-            var textColour = hovered ? TextColours.getSearchTermColour() : entry.getKey()
-                    .equals(highlight) ? TextColours.getSearchKeyColour() : TextColours.getTextColour();
+            var textColour = hovered ? TextColours.getSearchTermColour()
+                    : entry.getKey().equals(highlight) ? TextColours.getSearchKeyColour()
+                    : TextColours.getTextColour();
             graphics.drawString(Minecraft.getInstance().font,
                     entry.getValue(),
                     this.getX() + 2 + (hovered ? 6 : 0),
@@ -73,7 +77,8 @@ public class StringSelectorWidget<T> extends AbstractWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+        System.out.println("StringSelectorWidget");
         if (lastHovered != null) onSelect.accept(lastHovered);
     }
 

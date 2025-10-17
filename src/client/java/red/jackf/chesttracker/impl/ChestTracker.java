@@ -56,9 +56,10 @@ public class ChestTracker implements ClientModInitializer {
     public static Logger getLogger(String suffix) {
         return LogManager.getLogger(ChestTracker.class.getCanonicalName() + "/" + suffix);
     }
-
+    public static final KeyMapping.Category CHESTTRACKER_CATEGORY =
+            new KeyMapping.Category(ResourceLocation.tryParse("chesttracker:title"));
     public static final KeyMapping OPEN_GUI = KeyBindingHelper.registerKeyBinding(
-            new KeyMapping("key.chesttracker.open_gui", InputConstants.Type.KEYSYM, InputConstants.KEY_GRAVE, "chesttracker.title")
+            new KeyMapping("key.chesttracker.open_gui", InputConstants.Type.KEYSYM, InputConstants.KEY_GRAVE, CHESTTRACKER_CATEGORY)
     );
 
     public static void openInGame(Minecraft client, @Nullable Screen parent) {
@@ -121,13 +122,13 @@ public class ChestTracker implements ClientModInitializer {
             if (Minecraft.getInstance().level == null) return;
             if (screen instanceof AbstractContainerScreen<?>) {
                 // opening Chest Tracker GUI with a screen open
-                ScreenKeyboardEvents.afterKeyPress(screen).register((parent, key, scancode, modifiers) -> {
+                ScreenKeyboardEvents.afterKeyPress(screen).register((parent, key) -> {
                     // don't search in search bars, etc
                     if (ShouldIgnoreKey.EVENT.invoker().shouldIgnoreKey()) {
                         return;
                     }
 
-                    if (OPEN_GUI.matches(key, scancode)) {
+                    if (OPEN_GUI.matches(key)) {
                         openInGame(client, parent);
                     }
                 });

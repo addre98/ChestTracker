@@ -8,6 +8,8 @@ import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.ActionController;
 import dev.isxander.yacl3.gui.controllers.ControllerWidget;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.HashSet;
@@ -86,19 +88,9 @@ public class HoldToConfirmActionController implements Controller<BiConsumer<YACL
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (isMouseOver(mouseX, mouseY) && isAvailable()) {
-                playDownSound();
-                held.add(-1);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        public boolean mouseReleased(MouseButtonEvent event) {
             held.remove(-1);
-            return super.mouseReleased(mouseX, mouseY, button);
+            return super.mouseReleased(event);
         }
 
         @Override
@@ -112,26 +104,22 @@ public class HoldToConfirmActionController implements Controller<BiConsumer<YACL
         }
 
         @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if (!focused) {
-                return false;
-            }
-
-            if (isActivationKeybind(keyCode)) {
+        public boolean keyPressed(KeyEvent event) {
+            int key = event.key();
+            if (!focused) return false;
+            if (isActivationKeybind(key)) {
                 if (held.isEmpty()) playDownSound();
-                held.add(keyCode);
+                held.add(key);
                 return true;
             }
-
             return false;
         }
 
         @Override
-        public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-            if (isActivationKeybind(keyCode)) {
-                held.remove(keyCode);
-            }
-            return super.keyReleased(keyCode, scanCode, modifiers);
+        public boolean keyReleased(KeyEvent event) {
+            int key = event.key();
+            if (isActivationKeybind(key)) held.remove(key);
+            return super.keyReleased(event);
         }
 
         @Override

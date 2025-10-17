@@ -15,16 +15,14 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ScreenDirection;
+import snownee.jade.api.ui.JadeUI;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class JadeClientContentsPreview implements IBlockComponentProvider {
-    public static JadeClientContentsPreview INSTANCE = new JadeClientContentsPreview();
+    public static final JadeClientContentsPreview INSTANCE = new JadeClientContentsPreview();
     private JadeClientContentsPreview() {}
 
     public static final ResourceLocation ID = ChestTracker.id("memory_preview");
@@ -32,34 +30,37 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
     private static void possiblyAddItems(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config, Memory memory) {
         if (config.get(JadeIds.UNIVERSAL_ITEM_STORAGE) &&
                 (accessor.getServerData().contains("JadeItemStorage") // < 15.8.0
-                || accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString())) // >= 15.8.0
-        )
-            return; // don't do it if jade is handling it
+                        || accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString()))) // >= 15.8.0
+            return;
+
         if (config.get(JadeIds.MC_FURNACE)
                 && accessor.getBlock() instanceof AbstractFurnaceBlock &&
-                (accessor.getServerData().contains("furnace", Tag.TAG_LIST) // < 15.7.0
-                || accessor.getServerData().contains(JadeIds.MC_FURNACE.toString()))) // >=15.7.0
-            return; // don't do furnaces if handled so progress still shows
+                (accessor.getServerData().contains("furnace") // < 15.7.0
+                        || accessor.getServerData().contains(JadeIds.MC_FURNACE.toString()))) // >=15.7.0
+            return;
 
         var stacks = ItemStacks.flattenStacks(memory.items(), true);
 
         int max = config.getInt(accessor.showDetails() ? JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT : JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
         int perLine = config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE);
 
-        List<List<IElement>> lines = new ArrayList<>();
-        List<IElement> currentLine = new ArrayList<>(perLine);
+        List<List<Object>> lines = new ArrayList<>();
+        List<Object> currentLine = new ArrayList<>(perLine);
+
         for (int i = 0; i < max && i < stacks.size(); i++) {
             ItemStack item = stacks.get(i);
-            currentLine.add(IElementHelper.get().item(item));
+            currentLine.add(JadeUI.item(item)); // Используем новый метод JadeUI.item
             if (currentLine.size() == perLine) {
                 lines.add(currentLine);
                 currentLine = new ArrayList<>(perLine);
             }
         }
+
         if (!currentLine.isEmpty()) lines.add(currentLine);
+
         for (int i = 0; i < lines.size(); i++) {
-            tooltip.add(lines.get(i));
-            if (i < lines.size() - 1) tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
+            tooltip.add((Component) lines.get(i));
+            if (i < lines.size() - 1) tooltip.setLineMargin(-1, snownee.jade.api.ui.ScreenDirection.DOWN, -1);
         }
     }
 
@@ -68,8 +69,6 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
         MemoryBankAccess.INSTANCE.getLoaded().ifPresent(bank -> {
             Optional<Memory> memory = bank.getMemory(accessor.getLevel(), accessor.getPosition());
             if (memory.isEmpty()) return;
-
-            // items
             possiblyAddItems(tooltip, accessor, config, memory.get());
 
             Component name = memory.get().renderName();

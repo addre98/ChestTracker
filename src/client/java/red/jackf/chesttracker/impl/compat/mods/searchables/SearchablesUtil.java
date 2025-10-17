@@ -68,7 +68,6 @@ public class SearchablesUtil {
         );
 
         var formatter = SearchablesUtil.getFormatter();
-        box.setFormatter(formatter);
         box.addResponder(formatter);
 
         box.addResponder(callback);

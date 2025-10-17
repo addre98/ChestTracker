@@ -30,9 +30,8 @@ public enum ModIcon implements IGuiIcon {
     }
 
     @Override
-    public void renderAt(int x, int y, float z, boolean enabled, boolean selected, GuiGraphics guiGraphics) {
-        RenderUtils.drawTexturedRect(x, y, getU(), getV(), getWidth(), getHeight(), z);
-        RenderUtils.forceDraw(guiGraphics);
+    public void renderAt(GuiGraphics graphics, int x, int y, float zLevel, boolean enabled, boolean selected) {
+        RenderUtils.drawTexturedRect(graphics, this.getTexture(), x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), zLevel);
     }
 
     @Override

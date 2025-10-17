@@ -1,5 +1,6 @@
 package red.jackf.chesttracker.impl.gui.invbutton.position;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -43,7 +44,13 @@ public interface PositionUtils {
      * Calculate a free button position from a give cursor X and Y. Snaps to within the screen, and if Shift isn't held
      * snaps around the GUI borders and various elements. Returns an empty optional if none could be found.
      */
-    static Optional<ButtonPosition> calculate(AbstractContainerScreen<?> screen, int mouseX, int mouseY) {
+    /**
+     * Calculate a free button position from a give cursor X and Y. Snaps to within the screen, and if Shift isn't held
+     * snaps around the GUI borders and various elements. Returns an empty optional if none could be found.
+     *
+     * @param ignoreSnapping если true - игнорирует снэппинг к элементам (используется при драге)
+     */
+    static Optional<ButtonPosition> calculate(AbstractContainerScreen<?> screen, int mouseX, int mouseY, boolean ignoreSnapping) {
         final int width = ((CTButtonScreenDuck) screen).chesttracker$getWidth();
         final int recipeWidth = getRecipeComponentWidth(screen);
         final int height = ((CTButtonScreenDuck) screen).chesttracker$getHeight();
@@ -51,25 +58,21 @@ public interface PositionUtils {
         final int left = ((CTButtonScreenDuck) screen).chesttracker$getLeft();
         final int top = ((CTButtonScreenDuck) screen).chesttracker$getTop();
 
-        // so we're dragging the center of the button
         mouseX -= InventoryButton.SIZE / 2;
         mouseY -= InventoryButton.SIZE / 2;
 
-        // keep within screen bounds
         mouseX = Mth.clamp(mouseX, RectangleUtils.SCREEN_MARGIN, screen.width - RectangleUtils.SCREEN_MARGIN - InventoryButton.SIZE);
         mouseY = Mth.clamp(mouseY, RectangleUtils.SCREEN_MARGIN, screen.height - RectangleUtils.SCREEN_MARGIN - InventoryButton.SIZE);
 
-        if (!Screen.hasShiftDown()) {
-            // don't allow in recipe book
+        if (!ignoreSnapping && !Minecraft.getInstance().hasShiftDown()) {
             Set<ScreenRectangle> collisions = RectangleUtils.getCollidersFor(screen);
-
-            // apply
             var nudged = RectangleUtils.adjust(new ScreenRectangle(mouseX, mouseY, InventoryButton.SIZE, InventoryButton.SIZE), collisions, screen.getRectangle());
 
-            if (nudged.isEmpty()) return Optional.empty();
-
-            mouseX = nudged.get().left();
-            mouseY = nudged.get().top();
+            if (nudged.isEmpty()) {
+            } else {
+                mouseX = nudged.get().left();
+                mouseY = nudged.get().top();
+            }
         }
 
         ButtonPosition.VerticalAlignment yAlign;
@@ -85,7 +88,7 @@ public interface PositionUtils {
             yOffset = mouseY;
         } else if (mouseY <= guiTopGuiBottomMidpoint) {
             yAlign = ButtonPosition.VerticalAlignment.top;
-            yOffset = mouseY  - top;
+            yOffset = mouseY - top;
         } else if (mouseY <= guiBottomScreenBottom) {
             yAlign = ButtonPosition.VerticalAlignment.bottom;
             yOffset = top + height - mouseY;

@@ -4,6 +4,8 @@ import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import org.jetbrains.annotations.Nullable;
 import red.jackf.chesttracker.mixins.AbstractWidgetAccessor;
 
@@ -22,10 +24,10 @@ public class WidgetZOffsetWrapper<T extends AbstractWidget> extends AbstractWidg
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, zOffset);
+        guiGraphics.pose().pushMatrix(); // 2D equivalent of pushPose()
+        guiGraphics.pose().translate(0.0f, 0.0f); // only X and Y; no Z in Matrix3x2fStack
         ((AbstractWidgetAccessor) baseWidget).renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix(); // 2D equivalent of popPose()
     }
 
     @Override
@@ -46,18 +48,20 @@ public class WidgetZOffsetWrapper<T extends AbstractWidget> extends AbstractWidg
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return baseWidget.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        System.out.println("KeyPressed");
+        return baseWidget.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return baseWidget.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        System.out.println("KeyReleased");
+        return baseWidget.keyReleased(event);
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        return baseWidget.charTyped(codePoint, modifiers);
+    public boolean charTyped(CharacterEvent event) {
+        return baseWidget.charTyped(event);
     }
 
     @Nullable

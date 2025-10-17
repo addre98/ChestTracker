@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +22,7 @@ import java.util.Map;
 import static net.minecraft.network.chat.Component.translatable;
 
 public class EditMemoryKeysScreen extends BaseUtilScreen {
-    private static final int MAX_WIDTH = 480;
+    // private static final int MAX_WIDTH = 480; no usages
     private static final int CONTENT_TOP = 30;
     private static final int DELETE_BUTTON_SIZE = 60;
     private static final int NAME_BOX_MARGIN = 1;
@@ -174,12 +175,12 @@ public class EditMemoryKeysScreen extends BaseUtilScreen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         boolean anyTrue = false;
         for (DragHandleWidget widget : this.dragHandles.values()) {
-            anyTrue |= widget.mouseReleased(mouseX, mouseY, button);
+            anyTrue |= widget.mouseReleased(event);
         }
         if (anyTrue) return true;
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 }

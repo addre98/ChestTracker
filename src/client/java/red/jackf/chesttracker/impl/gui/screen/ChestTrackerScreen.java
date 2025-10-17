@@ -3,8 +3,12 @@ package red.jackf.chesttracker.impl.gui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +33,9 @@ import red.jackf.chesttracker.impl.util.GuiUtil;
 import red.jackf.chesttracker.impl.util.ItemStacks;
 import red.jackf.chesttracker.impl.util.Misc;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static net.minecraft.network.chat.Component.translatable;
@@ -50,6 +56,7 @@ public class ChestTrackerScreen extends Screen {
     private static final int MEMORY_ICON_SPACING = 24;
     private static final int SMALL_MENU_WIDTH = 192;
     private static final int SMALL_MENU_HEIGHT = 156;
+    private boolean initializedOnce = false;
 
     private static ContainerFilter containerFilter = ContainerFilter.ALL;
     private static ItemSort itemSort = ItemSort.COUNT_DESCENDING;
@@ -72,19 +79,23 @@ public class ChestTrackerScreen extends Screen {
         super(TITLE);
         ChestTracker.LOGGER.debug("Open Screen");
         this.parent = parent;
-        this.currentMemoryKey = ProviderUtils.getPlayersCurrentKey().orElseGet(() -> ChestTracker.id("unknown"));
+        this.currentMemoryKey = ProviderUtils.getPlayersCurrentKey()
+                .orElseGet(() -> ChestTracker.id("unknown"));
     }
 
     @Override
     protected void init() {
         MemoryBankImpl bank = MemoryBankAccessImpl.INSTANCE.getLoadedInternal().orElse(null);
-
-        // ask for a memory to be loaded if not available
         if (bank == null) {
-            Minecraft.getInstance().setScreen(new MemoryBankManagerScreen(parent, () -> new ChestTrackerScreen(this)));
+            if (!initializedOnce) {
+                initializedOnce = true;
+                Minecraft.getInstance().setScreen(new MemoryBankManagerScreen(parent, () -> new ChestTrackerScreen(this)));
+            } else {
+                this.onClose();
+            }
             return;
         }
-
+        initializedOnce = true;
         var config = ChestTrackerConfig.INSTANCE.instance();
         var liveGridWidth = config.gui.gridWidth + 1;
         var liveGridHeight = config.gui.gridHeight + 1;
@@ -354,34 +365,51 @@ public class ChestTrackerScreen extends Screen {
     @Override
     public void renderBackground(@NotNull GuiGraphics graphics, int i, int j, float f) {
         super.renderBackground(graphics, i, j, f);
-        graphics.blitSprite(RenderType::guiTextured, GuiUtil.BACKGROUND_SPRITE, left, top, menuWidth, menuHeight);
-        ifSearchables(() -> graphics.blitSprite(RenderType::guiTextured, GuiUtil.SEARCH_BAR_SPRITE, search.getX() - 2, search.getY() - 2, search.getWidth() + 4, search.getHeight()));
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.BACKGROUND_SPRITE, left, top, menuWidth, menuHeight);
+        ifSearchables(() -> graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.SEARCH_BAR_SPRITE, search.getX() - 2, search.getY() - 2, search.getWidth() + 4, search.getHeight()));
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (ignoreTextInput) {
             return false;
         }
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         this.ignoreTextInput = false;
-        /*if (this.getFocused() == search) {
-            if (keyCode == GLFW.GLFW_KEY_TAB) {
-                this.setFocused(null);
-                return true;
-            }
-        }*/
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.search.isFocused() && ifSearchables(a -> a.mouseClicked(mouseX, mouseY, button))) return true;
-        return super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (resize != null && resize.isMouseOver(event.x(), event.y())) {
+            boolean handled = resize.mouseClicked(event, isDoubleClick);
+            if (handled) return true;
+        }
+        if (this.search.isFocused() && ifSearchables(a -> a.mouseClicked(event, isDoubleClick)))
+            return true;
+
+        return super.mouseClicked(event, isDoubleClick);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (resize != null) {
+            boolean handled = resize.mouseReleased(event);
+            if (handled) return true;
+        }
+        return super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (resize != null && resize.mouseDragged(event, mouseX, mouseY)) {
+            return true;
+        }
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override
@@ -397,13 +425,6 @@ public class ChestTrackerScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (resize != null && resize.mouseReleased(mouseX, mouseY, button)) {
-            return true;
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
 
     @Override
     public void onClose() {

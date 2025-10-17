@@ -1,6 +1,7 @@
 package red.jackf.chesttracker.mixins;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,17 +30,33 @@ public abstract class AbstractContainerScreenMixin implements CTButtonScreenDuck
     @Nullable
     private ScreenOpenContextImpl openContext = null;
 
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void tryClickResize(MouseButtonEvent event, boolean isDoubleClick, CallbackInfoReturnable<Boolean> cir) {
+        if (this.ctButton != null && this.ctButton.isMouseOver(event.x(), event.y())) {
+            boolean handled = this.ctButton.mouseClicked(event, isDoubleClick);
+            if (handled) {
+                cir.setReturnValue(true);
+            }
+        }
+    }
+
     @Inject(method = "mouseDragged", at = @At("HEAD"), cancellable = true)
-    private void tryDragInvButton(double mouseX, double mouseY, int button, double dragX, double dragY, CallbackInfoReturnable<Boolean> cir) {
-        if (this.ctButton != null && this.ctButton.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
-            cir.setReturnValue(true);
+    private void tryDragResize(MouseButtonEvent event, double mouseX, double mouseY, CallbackInfoReturnable<Boolean> cir) {
+        if (this.ctButton != null) {
+            boolean handled = this.ctButton.mouseDragged(event, mouseX, mouseY);
+            if (handled) {
+                cir.setReturnValue(true);
+            }
         }
     }
 
     @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
-    private void tryMouseReleaseInvButton(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (this.ctButton != null && this.ctButton.mouseReleased(mouseX, mouseY, button)) {
-            cir.setReturnValue(true);
+    private void tryReleaseResize(MouseButtonEvent event, CallbackInfoReturnable<Boolean> cir) {
+        if (this.ctButton != null) {
+            boolean handled = this.ctButton.mouseReleased(event);
+            if (handled) {
+                cir.setReturnValue(true);
+            }
         }
     }
 

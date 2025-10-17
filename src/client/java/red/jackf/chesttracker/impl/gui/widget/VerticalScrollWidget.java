@@ -4,7 +4,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -49,10 +50,12 @@ public class VerticalScrollWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blitSprite(RenderType::guiTextured, BACKGROUND, getX(), getY(), width, height);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND, getX(), getY(), width, height);
 
         int handleY = (int) ((this.height - HANDLE_HEIGHT - 2 * INSET) * progress);
-        graphics.blitSprite(RenderType::guiTextured, disabled ? HANDLE_TEXTURE.disabled() : HANDLE_TEXTURE.enabled(),
+        graphics.blitSprite(
+                RenderPipelines.GUI_TEXTURED,
+                disabled ? HANDLE_TEXTURE.disabled() : HANDLE_TEXTURE.enabled(),
                 this.getX() + INSET,
                 this.getY() + INSET + handleY,
                 HANDLE_WIDTH,
@@ -64,12 +67,12 @@ public class VerticalScrollWidget extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.visible && !this.disabled && this.isWithinBounds(mouseX, mouseY) && button == 0) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (this.visible && !this.disabled && this.isWithinBounds(event.x(), event.y()) && event.button() == 0) {
             this.scrolling = true;
             return true;
         } else {
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(event, isDoubleClick);
         }
     }
 
@@ -84,20 +87,23 @@ public class VerticalScrollWidget extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (this.scrolling && button == 0) {
-            var progress = (mouseY - this.getY() - INSET - HANDLE_HEIGHT / 2) / (this.getHeight() - 2 * INSET - HANDLE_HEIGHT);
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (this.scrolling && event.button() == 0) {
+            double progress = (mouseY - this.getY() - INSET - HANDLE_HEIGHT / 2.0)
+                    / (this.getHeight() - 2 * INSET - HANDLE_HEIGHT);
             setProgress((float) progress);
             return true;
         } else {
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return super.mouseDragged(event, mouseX, mouseY);
         }
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) this.scrolling = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0) {
+            this.scrolling = false;
+        }
+        return super.mouseReleased(event);
     }
 
     public void setProgress(float value) {

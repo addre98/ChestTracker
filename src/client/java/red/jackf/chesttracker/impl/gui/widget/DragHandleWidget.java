@@ -6,7 +6,8 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -47,8 +48,10 @@ public class DragHandleWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blitSprite(RenderType::guiTextured, this.isHoveredOrFocused() ? TEXTURE.enabledFocused() : TEXTURE.enabled(), this.getX(), this.getY(), WIDTH, HEIGHT);
-
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                this.isHoveredOrFocused() ? TEXTURE.enabledFocused() : TEXTURE.enabled(),
+                this.getX(), this.getY(), WIDTH, HEIGHT
+        );
         if (this.target != null) {
             int y = this.highlightStartY + yHeight * this.target;
             graphics.fill(this.highlightStartX, y, this.highlightStartX + highlightWidth, y + 1, HIGHLIGHT_COLOUR);
@@ -66,24 +69,24 @@ public class DragHandleWidget extends AbstractWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        super.onClick(mouseX, mouseY);
-        this.updateTarget(mouseY);
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+        super.onClick(event, isDoubleClick);
+        this.updateTarget(event.y());
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (this.target != null) {
             this.callback.accept(this.target);
             this.target = null;
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        super.onDrag(mouseX, mouseY, dragX, dragY);
+    protected void onDrag(MouseButtonEvent event, double mouseX, double mouseY) {
+        super.onDrag(event, mouseX, mouseY);
         if (this.target != null) this.updateTarget(mouseY);
     }
 }

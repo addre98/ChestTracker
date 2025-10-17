@@ -6,33 +6,30 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Secondary feature button. Only appears when the primary Chest Tracker button is hovered.
- */
 public class SecondaryButton extends AbstractWidget {
     private static final long TWEEN_TIME = 60;
     private final WidgetSprites sprites;
     protected Runnable onClick;
-    private long startTweenTime = -1;
-    private int startX = 0;
-    private int startY = 0;
-    private int buttonIndex = 0;
+    public long startTweenTime = -1;
+    public int startX = 0;
+    public int startY = 0;
+    public int buttonIndex = 0;
 
     public SecondaryButton(WidgetSprites sprites, Component message, Runnable onClick) {
-        super(0, 0, InventoryButton.SIZE, InventoryButton.SIZE, message); // pos updated in InventoryButton#applyPosition
+        super(0, 0, InventoryButton.SIZE, InventoryButton.SIZE, message);
         this.onClick = onClick;
         this.setTooltip(Tooltip.create(message));
         this.sprites = sprites;
         this.visible = false;
     }
 
-    // used to delay tweening and control z order
     protected void setButtonIndex(int index) {
         this.buttonIndex = index;
     }
@@ -50,17 +47,17 @@ public class SecondaryButton extends AbstractWidget {
         int x = Mth.lerpDiscrete(factor, this.startX - 1, this.getX() - 1);
         int y = Mth.lerpDiscrete(factor, this.startY - 1, this.getY() - 1);
 
-        graphics.blitSprite(RenderType::guiTextured, texture, x, y, InventoryButton.IMAGE_SIZE, InventoryButton.IMAGE_SIZE);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, x, y, InventoryButton.IMAGE_SIZE, InventoryButton.IMAGE_SIZE);
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
         onClick.run();
     }
 
     @Override
     protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
-
+        // noop
     }
 
     public void setVisible(boolean shouldShow, int startX, int startY) {

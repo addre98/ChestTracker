@@ -5,8 +5,9 @@ import net.minecraft.network.chat.Component;
 
 interface SMP {
     static boolean isSMPJoinMessage(Component message) {
+        ClickEvent click = message.getStyle().getClickEvent();
         return message.getString().startsWith("SMP ID: ")
-                && message.getStyle().getClickEvent() != null
-                && message.getStyle().getClickEvent().getAction() == ClickEvent.Action.SUGGEST_COMMAND;
+                && click != null
+                && click.action() == ClickEvent.Action.SUGGEST_COMMAND;
     }
 }

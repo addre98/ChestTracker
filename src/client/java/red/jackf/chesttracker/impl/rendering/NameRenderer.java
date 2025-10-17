@@ -1,7 +1,8 @@
 package red.jackf.chesttracker.impl.rendering;
 
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.BlockHitResult;
@@ -19,41 +20,47 @@ import java.util.Map;
 import java.util.Set;
 
 public class NameRenderer {
+    private static final Minecraft MC = Minecraft.getInstance();
+
     public static void setup() {
-        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context, hitResult) -> {
-            if (ChestTrackerConfig.INSTANCE.instance().debug.disableContainerNames) return true;
+        HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
+            if (ChestTrackerConfig.INSTANCE.instance().debug.disableContainerNames) return;
 
             MemoryBankAccessImpl.INSTANCE.getLoadedInternal().ifPresent(bank -> {
                 if (bank.getMetadata().getCompatibilitySettings().nameRenderMode == NameRenderMode.DISABLED)
                     return;
-                bank.getKey(ProviderUtils.getPlayersCurrentKey()).ifPresent(key -> NameRenderer.renderNamesForKey(context, bank, key, hitResult));
+                bank.getKey(ProviderUtils.getPlayersCurrentKey()).ifPresent(key -> {
+                    HitResult hitResult = MC.hitResult;
+                    renderNames(key, bank, hitResult, guiGraphics);
+                });
             });
-            return true;
         });
     }
 
-    private static void renderNamesForKey(WorldRenderContext context, MemoryBankImpl bank, MemoryKey key, @Nullable HitResult hitResult) {
+    private static void renderNames(MemoryKey key, MemoryBankImpl bank, @Nullable HitResult hitResult,
+                                    GuiGraphics graphics) {
         @Nullable Memory focused = null;
 
-        if (hitResult instanceof BlockHitResult blockHitResult && !(hitResult.getType() == HitResult.Type.MISS)) {
-            var targetedMemory = key.get(blockHitResult.getBlockPos());
-
-            if (targetedMemory.isPresent() && targetedMemory.get().hasCustomName()) {
-                focused = targetedMemory.get();
-            }
+        if (hitResult instanceof BlockHitResult blockHit && blockHit.getType() != HitResult.Type.MISS) {
+            focused = key.get(blockHit.getBlockPos())
+                    .filter(Memory::hasCustomName)
+                    .orElse(null);
         }
 
         if (bank.getMetadata().getCompatibilitySettings().nameRenderMode == NameRenderMode.FULL) {
             Map<BlockPos, Memory> named = key.getNamedMemories();
-            final int maxRangeSq = ChestTrackerConfig.INSTANCE.instance().rendering.nameRange * ChestTrackerConfig.INSTANCE.instance().rendering.nameRange;
+            int maxRangeSq = ChestTrackerConfig.INSTANCE.instance().rendering.nameRange *
+                    ChestTrackerConfig.INSTANCE.instance().rendering.nameRange;
             Set<BlockPos> alreadyRendering = RenderUtils.getCurrentlyRenderedWithNames();
+
             for (var entry : named.entrySet()) {
                 if (entry.getValue() == focused) continue;
                 if (alreadyRendering.contains(entry.getKey())) continue;
-                if (entry.getKey().distToCenterSqr(context.camera().getPosition()) < maxRangeSq) {
+                if (entry.getKey().distToCenterSqr(MC.player.position()) < maxRangeSq) {
                     Component name = entry.getValue().renderName();
-                    if (name == null) continue;
-                    RenderUtils.scheduleLabelRender(entry.getValue().getCenterPosition().add(0, 1, 0), entry.getValue().renderName());
+                    if (name != null) {
+                        RenderUtils.scheduleLabelRender(entry.getValue().getCenterPosition().add(0, 1, 0), name);
+                    }
                 }
             }
         }

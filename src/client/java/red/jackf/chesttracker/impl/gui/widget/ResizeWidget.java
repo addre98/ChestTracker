@@ -5,7 +5,8 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -17,7 +18,7 @@ import java.util.function.BiConsumer;
 
 public class ResizeWidget extends AbstractWidget {
     private static final ResourceLocation TEXTURE = GuiUtil.png("widgets/resize");
-    private static final int SIZE = 10; // px
+    private static final int SIZE = 10;
     private final int stepSize;
     private final int currentWidth;
     private final int currentHeight;
@@ -30,8 +31,14 @@ public class ResizeWidget extends AbstractWidget {
     private final int top;
     @Nullable
     private Pair<Integer, Integer> target = null;
+    private double totalDeltaX = 0;
+    private double totalDeltaY = 0;
 
-    public ResizeWidget(int x, int y, int screenLeft, int screenTop, int stepSize, int currentWidth, int currentHeight, int minWidth, int minHeight, int maxWidth, int maxHeight, BiConsumer<Integer, Integer> callback) {
+    public ResizeWidget(int x, int y, int screenLeft, int screenTop, int stepSize,
+                        int currentWidth, int currentHeight,
+                        int minWidth, int minHeight,
+                        int maxWidth, int maxHeight,
+                        BiConsumer<Integer, Integer> callback) {
         super(x, y, SIZE, SIZE, Component.empty());
         this.left = screenLeft;
         this.top = screenTop;
@@ -53,9 +60,12 @@ public class ResizeWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blit(RenderType::guiTextured, TEXTURE, this.getX(), this.getY(), 0, 0, SIZE, SIZE, SIZE, SIZE);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,
+                this.getX(), this.getY(),
+                0, 0,
+                SIZE, SIZE,
+                SIZE, SIZE);
 
-        // border
         if (this.target != null) {
             var right = this.getX() + (this.target.getLeft() - this.currentWidth) * stepSize + 10;
             var bottom = this.getY() + (this.target.getRight() - this.currentHeight) * stepSize + 10;
@@ -73,21 +83,23 @@ public class ResizeWidget extends AbstractWidget {
         narrationElementOutput.add(NarratedElementType.USAGE, Component.translatable("chesttracker.gui.narration.drag"));
     }
 
-    private void updateTarget(double mouseX, double mouseY) {
+    private void updateTarget() {
         this.target = Pair.of(
-                Mth.clamp((int) (currentWidth + (mouseX - this.getX()) / stepSize), minWidth, maxWidth),
-                Mth.clamp((int) (currentHeight + (mouseY - this.getY()) / stepSize), minHeight, maxHeight)
+                Mth.clamp((int)(currentWidth + totalDeltaX / stepSize), minWidth, maxWidth),
+                Mth.clamp((int)(currentHeight + totalDeltaY / stepSize), minHeight, maxHeight)
         );
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        super.onClick(mouseX, mouseY);
-        updateTarget(mouseX, mouseY);
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+        super.onClick(event, isDoubleClick);
+        totalDeltaX = 0;
+        totalDeltaY = 0;
+        updateTarget();
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (this.target != null) {
             if (this.target.getLeft() == currentWidth && this.target.getRight() == currentHeight) {
                 this.target = null;
@@ -96,12 +108,16 @@ public class ResizeWidget extends AbstractWidget {
             }
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        super.onDrag(mouseX, mouseY, dragX, dragY);
-        if (this.target != null) updateTarget(mouseX, mouseY);
+    protected void onDrag(MouseButtonEvent event, double deltaX, double deltaY) {
+        super.onDrag(event, deltaX, deltaY);
+        if (this.target != null) {
+            totalDeltaX += deltaX;
+            totalDeltaY += deltaY;
+            updateTarget();
+        }
     }
 }
