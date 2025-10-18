@@ -1,6 +1,5 @@
 package red.jackf.chesttracker.impl.compat.mods.jade;
 
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +48,7 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
 
         for (int i = 0; i < max && i < stacks.size(); i++) {
             ItemStack item = stacks.get(i);
-            currentLine.add(JadeUI.item(item)); // Используем новый метод JadeUI.item
+            currentLine.add(JadeUI.item(item));
             if (currentLine.size() == perLine) {
                 lines.add(currentLine);
                 currentLine = new ArrayList<>(perLine);

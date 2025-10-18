@@ -2,7 +2,6 @@ package red.jackf.chesttracker.impl.gui.invbutton.position;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.util.Mth;
@@ -22,8 +21,8 @@ public interface PositionUtils {
      * Gets the recipe book component current visible on screen, if any.
      */
     static @Nullable RecipeBookComponent<?> getVisibleRecipe(AbstractContainerScreen<?> screen) {
-        if (screen instanceof AbstractRecipeBookScreenAccessor recipeHolder && recipeHolder.getRecipeBookComponent().isVisible()) {
-            return recipeHolder.getRecipeBookComponent();
+        if (screen instanceof AbstractRecipeBookScreenAccessor recipeHolder && recipeHolder.chesttracker$getRecipeBookComponent().isVisible()) {
+            return recipeHolder.chesttracker$getRecipeBookComponent();
         } else {
             return null;
         }
@@ -43,12 +42,8 @@ public interface PositionUtils {
     /**
      * Calculate a free button position from a give cursor X and Y. Snaps to within the screen, and if Shift isn't held
      * snaps around the GUI borders and various elements. Returns an empty optional if none could be found.
-     */
-    /**
-     * Calculate a free button position from a give cursor X and Y. Snaps to within the screen, and if Shift isn't held
-     * snaps around the GUI borders and various elements. Returns an empty optional if none could be found.
      *
-     * @param ignoreSnapping если true - игнорирует снэппинг к элементам (используется при драге)
+     * @param ignoreSnapping if true - ignores snapping to elements (used when dragging)
      */
     static Optional<ButtonPosition> calculate(AbstractContainerScreen<?> screen, int mouseX, int mouseY, boolean ignoreSnapping) {
         final int width = ((CTButtonScreenDuck) screen).chesttracker$getWidth();

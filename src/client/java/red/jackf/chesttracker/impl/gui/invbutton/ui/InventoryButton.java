@@ -182,7 +182,8 @@ public class InventoryButton extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        for (AbstractWidget secondary : this.secondaryButtons) {
+        for (int i = 0; i < this.secondaryButtons.size(); i++) {
+            AbstractWidget secondary = this.secondaryButtons.get(i);
             if (secondary.mouseClicked(event, isDoubleClick)) {
                 this.secondaryButtonClicked = true;
                 return true;
@@ -206,7 +207,7 @@ public class InventoryButton extends AbstractWidget {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         for (AbstractWidget secondary : this.secondaryButtons) {
-            if (secondary.visible && secondary.mouseReleased(event)) {
+            if (secondary.visible && secondary.isMouseOver(event.x(), event.y()) && secondary.mouseReleased(event)) {
                 this.canDrag = false;
                 this.mouseDownStart = -1;
                 this.secondaryButtonClicked = false;

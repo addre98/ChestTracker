@@ -1,6 +1,5 @@
 package red.jackf.chesttracker.impl;
 
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -48,6 +47,7 @@ public class DefaultChestTrackerPlugin implements ChestTrackerPlugin {
                 LoomScreen.class,
                 StonecutterScreen.class,
                 BeaconScreen.class,
+                CraftingScreen.class,
 
                 // inventory
                 InventoryScreen.class,
