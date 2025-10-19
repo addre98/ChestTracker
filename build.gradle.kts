@@ -264,23 +264,42 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"]!!)
+
+            pom {
+                name = project.properties["mod_name"].toString()
+                description = "Track items across storage blocks"
+                url = "https://github.com/ponuing/ChestTracker"
+                licenses {
+                    license {
+                        name = "LGPL-3.0"
+                        url = "https://opensource.org/license/lgpl-3-0/"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "ponuing"
+                        url = "https://github.com/ponuing"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/ponuing/ChestTracker.git"
+                    developerConnection = "scm:git:git://github.com/ponuing/ChestTracker.git"
+                    url = "https://github.com/ponuing/ChestTracker"
+                }
+            }
         }
     }
 
     repositories {
-        // if not in CI we publish to maven local
-        if (!System.getenv().containsKey("CI")) repositories.mavenLocal()
+        if (!System.getenv().containsKey("CI")) mavenLocal()
 
         if (canPublish) {
             maven {
-                name = "JackFredMaven"
-                url = uri("https://maven.jackf.red/releases/")
-                content {
-                    includeGroupByRegex("red.jackf.*")
-                }
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/ponuing/ChestTracker")
                 credentials {
-                    username = properties["jfmaven.user"]?.toString() ?: System.getenv("JACKFRED_MAVEN_USER")
-                    password = properties["jfmaven.key"]?.toString() ?: System.getenv("JACKFRED_MAVEN_PASS")
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
                 }
             }
         }
