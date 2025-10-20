@@ -2,30 +2,23 @@
   "schemaVersion": 1,
   "id": "chesttracker",
   "version": "${version}",
-  "name": "Chest Tracker",
-  "description": "Client-side storage management and searching.",
+  "name": "Chest Tracker (Unofficial port)",
+  "description": "Client side item storage - remember where you've put things. Unofficial port Chest Tracker.",
   "authors": [
-    "JackFred"
+    "JackFred",
+    "ponuing"
   ],
   "contributors": [
     "WinTone01 - Turkish Translations "
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/chest-tracker",
-    "sources": "https://github.com/JackFred2/ChestTracker",
-    "issues": "https://github.com/JackFred2/ChestTracker/issues"
+    "homepage": "https://modrinth.com/mod/chest-tracker-port",
+    "sources": "https://github.com/ponuing/ChestTracker",
+    "issues": "https://github.com/ponuing/ChestTracker/issues"
   },
   "license": "LGPL-3.0-only",
   "icon": "assets/chesttracker/icon.png",
   "environment": "client",
-  "jars": [
-    {
-      "file": "META-INF/jars/whereisit-2.6.4+1.21.9.jar"
-    },
-    {
-      "file": "META-INF/jars/jackfredlib-1.10.6+1.21.9.jar"
-    }
-  ],
   "entrypoints": {
     "client": [
       "red.jackf.chesttracker.impl.ChestTracker"
@@ -56,10 +49,8 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/chest-tracker",
-        "modmenu.github_releases": "https://github.com/JackFred2/ChestTracker/releases",
-        "modmenu.wiki": "https://docs.jackf.red/chest-tracker",
-        "modmenu.donate": "https://ko-fi.com/jackfred"
+        "modmenu.issues": "https://github.com/ponuing/ChestTracker/issues",
+        "modmenu.github_releases": "https://github.com/ponuing/ChestTracker/releases"
       }
     }
   },

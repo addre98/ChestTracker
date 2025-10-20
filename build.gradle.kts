@@ -440,7 +440,7 @@ if (canPublish) {
             if (System.getenv().containsKey("MODRINTH_TOKEN") || dryRun.get()) {
                 modrinth {
                     accessToken.set(System.getenv("MODRINTH_TOKEN"))
-                    projectId.set("ni4SrKmq")
+                    projectId.set("VC2NohMN")
                     properties["game_versions_mr"]!!.toString().split(",").forEach {
                         minecraftVersions.add(it)
                     }
@@ -450,7 +450,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("where-is-it").forEach {
+                    listOf("where-is-it-port").forEach {
                         embeds {
                             slug.set(it)
                         }
