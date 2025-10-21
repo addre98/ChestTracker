@@ -1,5 +1,6 @@
 package red.jackf.chesttracker.impl.compat.mods.jade;
 
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +16,7 @@ import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
 import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.ScreenDirection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +45,8 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
         int max = config.getInt(accessor.showDetails() ? JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT : JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
         int perLine = config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE);
 
-        List<List<Object>> lines = new ArrayList<>();
-        List<Object> currentLine = new ArrayList<>(perLine);
+        List<List<LayoutElement>> lines = new ArrayList<>();
+        List<LayoutElement> currentLine = new ArrayList<>(perLine);
 
         for (int i = 0; i < max && i < stacks.size(); i++) {
             ItemStack item = stacks.get(i);
@@ -57,9 +59,9 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
 
         if (!currentLine.isEmpty()) lines.add(currentLine);
 
-        for (int i = 0; i < lines.size(); i++) {
-            tooltip.add((Component) lines.get(i));
-            if (i < lines.size() - 1) tooltip.setLineMargin(-1, snownee.jade.api.ui.ScreenDirection.DOWN, -1);
+        for (List<LayoutElement> line : lines) {
+            tooltip.add(line);
+            tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
         }
     }
 
