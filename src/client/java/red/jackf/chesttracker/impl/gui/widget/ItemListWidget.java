@@ -28,6 +28,7 @@ import red.jackf.whereisit.client.api.events.SearchRequestPopulator;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class ItemListWidget extends AbstractWidget {
     private static final ResourceLocation BACKGROUND_SPRITE = GuiUtil.sprite("widgets/slot_background");
@@ -140,30 +141,35 @@ public class ItemListWidget extends AbstractWidget {
         if (!this.hideTooltip) {
             var stack = items.get(index);
             var lines = Screen.getTooltipFromItem(Minecraft.getInstance(), stack);
-            var font = Minecraft.getInstance().font;
             if (stack.getCount() > 999) {
                 lines.add(Component.literal(Strings.commaSeparated(stack.getCount()))
                         .withStyle(ChatFormatting.GREEN));
             }
             var image = stack.getTooltipImage();
-            if (font == null){
-                return;
-            }
             List<ClientTooltipComponent> components = lines.stream()
                     .map(Component::getVisualOrderText)
+                    .filter(Objects::nonNull)
                     .map(ClientTooltipComponent::create)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-            image.ifPresent(img -> components.add(0, ClientTooltipComponent.create(img)));
+            image.ifPresent(img -> {
+                ClientTooltipComponent imgComponent = ClientTooltipComponent.create(img);
+                if (imgComponent != null) {
+                    components.add(0, imgComponent);
+                }
+            });
 
-            graphics.renderTooltip(
-                    font,
-                    components,
-                    mouseX,
-                    mouseY + 12,
-                    DefaultTooltipPositioner.INSTANCE,
-                    null
-            );
+            if (!components.isEmpty()) {
+                graphics.renderTooltip(
+                        Minecraft.getInstance().font,
+                        components,
+                        mouseX,
+                        mouseY + 12,
+                        DefaultTooltipPositioner.INSTANCE,
+                        null
+                );
+            }
         }
     }
 
