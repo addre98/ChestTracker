@@ -34,7 +34,7 @@ on:
         type: boolean
 
 permissions:
-  # packages: write
+  packages: write
   contents: write
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
           distribution: 'temurin'
 
       - name: setup gradle
-        uses: gradle/gradle-build-action@v2.12.0
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-home-cache-includes: |
             caches
@@ -137,6 +137,9 @@ jobs:
 
       - name: build & run tests
         run: ./gradlew check build
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create version tag
         if: ${{ inputs.createNewTag == true }}
@@ -154,35 +157,29 @@ jobs:
         if: ${{ inputs.createNewTag == true }}
         run: git fetch --tags
 
-      - name: Publish to JackFred Maven
+      - name: Publish to GitHub Packages
         if: ${{ inputs.publishToMaven == true }}
         run: ./gradlew generateChangelog publish -PchangelogHeaderAddon="${{ inputs.changelogHeader }}"
         env:
           RELEASE: true
-          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JACKFRED_MAVEN_USER: ${{ secrets.JACKFRED_MAVEN_USER }}
-          JACKFRED_MAVEN_PASS: ${{ secrets.JACKFRED_MAVEN_PASS }}
 
       - name: Publish as GitHub Release
         if: ${{ inputs.publishToGitHub == true }}
         run: ./gradlew generateChangelog githubRelease -PchangelogHeaderAddon="${{ inputs.changelogHeader }}"
         env:
           RELEASE: true
-          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JACKFRED_MAVEN_USER: ${{ secrets.JACKFRED_MAVEN_USER }}
-          JACKFRED_MAVEN_PASS: ${{ secrets.JACKFRED_MAVEN_PASS }}
 
       - name: Publish to Modrinth and Curseforge
         run: ./gradlew generateChangelog publishMods -PchangelogHeaderAddon="${{ inputs.changelogHeader }}"
         if: ${{ inputs.publishToModDistributors == true }}
         env:
           RELEASE: true
-          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JACKFRED_MAVEN_USER: ${{ secrets.JACKFRED_MAVEN_USER }}
-          JACKFRED_MAVEN_PASS: ${{ secrets.JACKFRED_MAVEN_PASS }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
 
