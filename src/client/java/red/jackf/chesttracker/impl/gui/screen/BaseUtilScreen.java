@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.gui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import red.jackf.chesttracker.impl.gui.GuiConstants;
@@ -34,7 +34,7 @@ public abstract class BaseUtilScreen extends Screen {
     @Override
     public void renderBackground(@NotNull GuiGraphics graphics, int i, int j, float f) {
         super.renderBackground(graphics, i, j, f);
-        graphics.blitSprite(RenderType::guiTextured, GuiUtil.BACKGROUND_SPRITE, this.left, this.top, this.menuWidth, this.menuHeight);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.BACKGROUND_SPRITE, this.left, this.top, this.menuWidth, this.menuHeight);
     }
 
     @Override

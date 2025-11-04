@@ -21,8 +21,8 @@ public interface PositionUtils {
      * Gets the recipe book component current visible on screen, if any.
      */
     static @Nullable RecipeBookComponent<?> getVisibleRecipe(AbstractContainerScreen<?> screen) {
-        if (screen instanceof AbstractRecipeBookScreenAccessor recipeHolder && recipeHolder.getRecipeBookComponent().isVisible()) {
-            return recipeHolder.getRecipeBookComponent();
+        if (screen instanceof AbstractRecipeBookScreenAccessor recipeHolder && recipeHolder.chesttracker$getRecipeBookComponent().isVisible()) {
+            return recipeHolder.chesttracker$getRecipeBookComponent();
         } else {
             return null;
         }

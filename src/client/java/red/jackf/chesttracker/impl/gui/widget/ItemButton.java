@@ -4,8 +4,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import red.jackf.chesttracker.impl.util.GuiUtil;
@@ -31,11 +32,10 @@ public class ItemButton extends Button {
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         switch (background) {
             case VANILLA -> super.renderWidget(graphics, mouseX, mouseY, partialTick);
-            case CUSTOM -> graphics.blitSprite(RenderType::guiTextured, this.highlighted || this.isHovered() ? TEXTURE.enabledFocused() : TEXTURE.enabled(),
-                                           getX(),
-                                           getY(),
-                                           SIZE,
-                                           SIZE);
+            case CUSTOM -> {
+                ResourceLocation texture = this.highlighted || this.isHovered() ? TEXTURE.enabledFocused() : TEXTURE.enabled();
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), SIZE, SIZE);
+            }
         }
         graphics.renderItem(stack, this.getX() + 2, this.getY() + 2);
     }
