@@ -16,7 +16,8 @@
     "compat.litematica.GuiMaterialListMixin",
     "compat.litematica.MaterialListUtilsMixin",
     "compat.litematica.WidgetMaterialListEntryMixin",
-    "datafix.V1460Mixin"
+    "datafix.V1460Mixin",
+    "LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
