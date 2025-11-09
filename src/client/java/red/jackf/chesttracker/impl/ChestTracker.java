@@ -156,7 +156,6 @@ public class ChestTracker implements ClientModInitializer {
 
         // auto add placed blocks with data, such as shulker boxes
         ProviderHandler.INSTANCE.setupEvents();
-        NameRenderer.setup();
         InteractionTrackerImpl.setup();
         MemoryIntegrity.setup();
         ImagePixelReader.setup();
