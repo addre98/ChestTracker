@@ -35,7 +35,6 @@ import red.jackf.chesttracker.impl.providers.InteractionTrackerImpl;
 import red.jackf.chesttracker.impl.providers.ProviderHandler;
 import red.jackf.chesttracker.impl.providers.ScreenCloseContextImpl;
 import red.jackf.chesttracker.impl.providers.ScreenOpenContextImpl;
-import red.jackf.chesttracker.impl.rendering.NameRenderer;
 import red.jackf.chesttracker.impl.storage.ConnectionSettings;
 import red.jackf.chesttracker.impl.storage.Storage;
 import red.jackf.whereisit.client.api.events.ShouldIgnoreKey;
@@ -155,7 +154,6 @@ public class ChestTracker implements ClientModInitializer {
 
         // auto add placed blocks with data, such as shulker boxes
         ProviderHandler.INSTANCE.setupEvents();
-        NameRenderer.setup();
         InteractionTrackerImpl.setup();
         MemoryIntegrity.setup();
         ImagePixelReader.setup();
