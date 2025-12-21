@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream
  * Adapted from TerraformersMC's ferry script
  */
 abstract class GenerateChangelogTask : DefaultTask() {
+    @get:Input
     abstract val execOperations: ExecOperations
 
     /**
