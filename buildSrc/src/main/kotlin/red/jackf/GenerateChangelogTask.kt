@@ -8,6 +8,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecOperations
 import java.io.ByteArrayOutputStream
 
 /**
@@ -16,6 +17,8 @@ import java.io.ByteArrayOutputStream
  * Adapted from TerraformersMC's ferry script
  */
 abstract class GenerateChangelogTask : DefaultTask() {
+    abstract val execOperations: ExecOperations
+
     /**
      * Previous tag to start grabbing commits from
      */
@@ -87,7 +90,7 @@ abstract class GenerateChangelogTask : DefaultTask() {
         }
 
         val stream = ByteArrayOutputStream()
-        project.exec {
+        execOperations.exec {
             it.commandLine = command
             it.standardOutput = stream
         }

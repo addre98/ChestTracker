@@ -2,7 +2,7 @@ package red.jackf.chesttracker.impl.compat.mods.jade;
 
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import red.jackf.chesttracker.api.memory.Memory;
@@ -26,7 +26,7 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
     public static final JadeClientContentsPreview INSTANCE = new JadeClientContentsPreview();
     private JadeClientContentsPreview() {}
 
-    public static final ResourceLocation ID = ChestTracker.id("memory_preview");
+    public static final Identifier ID = ChestTracker.id("memory_preview");
 
     private static void possiblyAddItems(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config, Memory memory) {
         if (config.get(JadeIds.UNIVERSAL_ITEM_STORAGE) &&
@@ -80,7 +80,7 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return ID;
     }
 }

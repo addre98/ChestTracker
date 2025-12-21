@@ -1,6 +1,6 @@
 package red.jackf.chesttracker.api.providers.defaults;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import red.jackf.chesttracker.api.providers.MemoryKeyIcon;
 import red.jackf.chesttracker.impl.providers.DefaultIconsImpl;
 
@@ -36,7 +36,7 @@ public interface DefaultIcons {
      * @param target Target ID to place the icon above.
      * @param icon Icon to add to the default list.
      */
-    static void registerIconAbove(ResourceLocation target, MemoryKeyIcon icon) {
+    static void registerIconAbove(Identifier target, MemoryKeyIcon icon) {
         DefaultIconsImpl.registerIconAbove(target, icon);
     }
 
@@ -47,7 +47,7 @@ public interface DefaultIcons {
      * @param target Target ID to place the icon below.
      * @param icon Icon to add to the default list.
      */
-    static void registerIconBelow(ResourceLocation target, MemoryKeyIcon icon) {
+    static void registerIconBelow(Identifier target, MemoryKeyIcon icon) {
         DefaultIconsImpl.registerIconBelow(target, icon);
     }
 }

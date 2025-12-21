@@ -2,7 +2,7 @@ package red.jackf.chesttracker.impl.providers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +41,7 @@ public class MemoryBuilderImpl implements MemoryBuilder {
     }
 
     @Override
-    public DefaultProviderScreenClose.Result toResult(ResourceLocation key, BlockPos position) {
+    public DefaultProviderScreenClose.Result toResult(Identifier key, BlockPos position) {
         return new DefaultProviderScreenClose.Result(key, position, this.build());
     }
 

@@ -2,7 +2,7 @@ package red.jackf.chesttracker.api.providers.defaults;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import red.jackf.chesttracker.api.ClientBlockSource;
 import red.jackf.chesttracker.api.EventPhases;
 import red.jackf.chesttracker.api.providers.MemoryLocation;
@@ -25,7 +25,7 @@ import red.jackf.jackfredlib.api.base.ResultHolder;
 public interface DefaultProviderMemoryLocation {
     /**
      * Event for getting a memory location from a given position in-world. Uses the phases in {@link EventPhases} in order
-     * to allow for overridable defaults; if this isn't enough use {@link Event#addPhaseOrdering(ResourceLocation, ResourceLocation)}
+     * to allow for overridable defaults; if this isn't enough use {@link Event#addPhaseOrdering(Identifier, Identifier)}
      * with your own.
      *
      * @see EventPhases

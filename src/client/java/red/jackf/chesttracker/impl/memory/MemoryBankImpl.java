@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.memory;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -26,17 +26,17 @@ import red.jackf.whereisit.api.SearchResult;
 import java.util.*;
 
 public class MemoryBankImpl implements MemoryBank {
-    public static final Codec<Map<ResourceLocation, MemoryKeyImpl>> DATA_CODEC = JFLCodecs.mutableMap(Codec.unboundedMap(ResourceLocation.CODEC, MemoryKeyImpl.Codecs.MAIN));
+    public static final Codec<Map<Identifier, MemoryKeyImpl>> DATA_CODEC = JFLCodecs.mutableMap(Codec.unboundedMap(Identifier.CODEC, MemoryKeyImpl.Codecs.MAIN));
 
     ////////////
     // OBJECT //
     ////////////
 
-    private final Map<ResourceLocation, MemoryKeyImpl> memoryKeys;
+    private final Map<Identifier, MemoryKeyImpl> memoryKeys;
     private Metadata metadata;
     private String id;
 
-    public MemoryBankImpl(Metadata metadata, Map<ResourceLocation, MemoryKeyImpl> keys) {
+    public MemoryBankImpl(Metadata metadata, Map<Identifier, MemoryKeyImpl> keys) {
         this.metadata = metadata;
         this.memoryKeys = keys;
         this.memoryKeys.values().forEach(key -> key.setMemoryBank(this));
@@ -65,7 +65,7 @@ public class MemoryBankImpl implements MemoryBank {
     /**
      * @return All memories in every key of this bank
      */
-    public Map<ResourceLocation, MemoryKeyImpl> getMemories() {
+    public Map<Identifier, MemoryKeyImpl> getMemories() {
         return memoryKeys;
     }
 
@@ -74,7 +74,7 @@ public class MemoryBankImpl implements MemoryBank {
      *
      * @param key Key to remove
      */
-    public void removeKey(ResourceLocation key) {
+    public void removeKey(Identifier key) {
         this.memoryKeys.remove(key);
     }
 
@@ -86,7 +86,7 @@ public class MemoryBankImpl implements MemoryBank {
      * @param stackMergeMode How to merge identical stacks
      * @param unpackNested   Whether to count items within containers, such as Shulker Boxes
      */
-    public List<ItemStack> getCounts(ResourceLocation key, CountingPredicate filter, StackMergeMode stackMergeMode, boolean unpackNested) {
+    public List<ItemStack> getCounts(Identifier key, CountingPredicate filter, StackMergeMode stackMergeMode, boolean unpackNested) {
         if (this.memoryKeys.containsKey(key)) {
             return this.memoryKeys.get(key).getCounts(filter, stackMergeMode, unpackNested);
         } else {
@@ -101,7 +101,7 @@ public class MemoryBankImpl implements MemoryBank {
      * @param request Search request to run on all memories
      * @return A list of search requests consisting of matching memories in this key.
      */
-    public List<SearchResult> doSearch(ResourceLocation key, SearchRequest request) {
+    public List<SearchResult> doSearch(Identifier key, SearchRequest request) {
         if (!this.memoryKeys.containsKey(key)) return Collections.emptyList();
 
         MemoryKeyImpl memoryKey = this.memoryKeys.get(key);
@@ -114,17 +114,17 @@ public class MemoryBankImpl implements MemoryBank {
     /**
      * Returns a list of all memory keys in this bank.
      */
-    public Set<ResourceLocation> getKeys() {
+    public Set<Identifier> getKeys() {
         return this.memoryKeys.keySet();
     }
 
     @Override
-    public Set<ResourceLocation> getMemoryKeys() {
+    public Set<Identifier> getMemoryKeys() {
         return Set.copyOf(this.memoryKeys.keySet());
     }
 
     @Override
-    public Map<ResourceLocation, MemoryKey> getAllMemories() {
+    public Map<Identifier, MemoryKey> getAllMemories() {
         return Map.copyOf(this.memoryKeys);
     }
 
@@ -137,15 +137,15 @@ public class MemoryBankImpl implements MemoryBank {
     }
 
     @Override
-    public Optional<MemoryKey> getKey(ResourceLocation keyId) {
+    public Optional<MemoryKey> getKey(Identifier keyId) {
         return Optional.ofNullable(this.memoryKeys.get(keyId));
     }
 
-    public Optional<MemoryKeyImpl> getKeyInternal(ResourceLocation key) {
+    public Optional<MemoryKeyImpl> getKeyInternal(Identifier key) {
         return Optional.ofNullable(memoryKeys.get(key));
     }
 
-    public MemoryKeyImpl getOrCreateKeyInternal(ResourceLocation key) {
+    public MemoryKeyImpl getOrCreateKeyInternal(Identifier key) {
         return this.memoryKeys.computeIfAbsent(key, ignored -> {
             var newKey = new MemoryKeyImpl();
             newKey.setMemoryBank(this);
@@ -154,7 +154,7 @@ public class MemoryBankImpl implements MemoryBank {
     }
 
     @Override
-    public void addMemory(ResourceLocation keyId, BlockPos location, Memory memory) {
+    public void addMemory(Identifier keyId, BlockPos location, Memory memory) {
         MemoryKeyImpl key = this.getOrCreateKeyInternal(keyId);
 
         key.add(location, memory);
@@ -166,7 +166,7 @@ public class MemoryBankImpl implements MemoryBank {
     }
 
     @Override
-    public void removeMemory(ResourceLocation key, BlockPos pos) {
+    public void removeMemory(Identifier key, BlockPos pos) {
         MemoryKeyImpl memoryKey = this.memoryKeys.get(key);
         if (memoryKey != null) {
             memoryKey.remove(pos);
@@ -176,7 +176,7 @@ public class MemoryBankImpl implements MemoryBank {
         }
     }
 
-    public void setManualModeOverride(ResourceLocation key, BlockPos pos, ManualMode mode) {
+    public void setManualModeOverride(Identifier key, BlockPos pos, ManualMode mode) {
         if (mode == ManualMode.DEFAULT && !this.getKeys().contains(key)) return;
 
         var keyImpl = this.getOrCreateKeyInternal(key);
@@ -194,7 +194,7 @@ public class MemoryBankImpl implements MemoryBank {
         }
     }
 
-    public void setNameOverride(ResourceLocation key, BlockPos pos, @NotNull String name) {
+    public void setNameOverride(Identifier key, BlockPos pos, @NotNull String name) {
         boolean shouldRemove = name.isBlank();
         if (shouldRemove && !this.getKeys().contains(key)) return;
 

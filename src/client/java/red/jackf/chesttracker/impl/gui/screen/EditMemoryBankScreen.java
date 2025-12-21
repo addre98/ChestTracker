@@ -241,8 +241,11 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
                                     getSettingsY(0),
                                     getSettingsWidth(1),
                                     BUTTON_HEIGHT,
-                                    literal("^_^").withStyle(ChatFormatting.BOLD),
-                                    font).setColor(0x4040FF), SettingsTab.EMPTY);
+                                    literal("^_^").withStyle(style -> style
+                                            .withBold(true)
+                                            .withColor(0x4040FF)
+                                    ), font),
+                SettingsTab.EMPTY);
 
         setSettingsTab(SettingsTab.FILTERING);
     }
@@ -252,30 +255,33 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
     ///////////////////
 
     private void setupCompatibilitySettings() {
-        addSetting(CycleButton.<CompatibilitySettings.NameFilterMode>builder(mode -> mode.label)
-                .withTooltip(mode -> Tooltip.create(translatable("chesttracker.gui.editMemoryBank.compatibility.nameFilterMode.tooltip")
+        addSetting(CycleButton.<CompatibilitySettings.NameFilterMode>builder(mode -> mode.label,
+                                () -> this.memoryBank.metadata().getCompatibilitySettings().nameFilterMode)
+                        .withTooltip(mode -> Tooltip.create(
+                                translatable("chesttracker.gui.editMemoryBank.compatibility.nameFilterMode.tooltip")
                         .append(CommonComponents.NEW_LINE).append(CommonComponents.NEW_LINE)
                         .append(mode.tooltip)))
                 .withValues(CompatibilitySettings.NameFilterMode.values())
-                .withInitialValue(this.memoryBank.metadata().getCompatibilitySettings().nameFilterMode)
                 .create(getSettingsX(0),
                         getSettingsY(0),
                         getSettingsWidth(2),
                         BUTTON_HEIGHT,
                         translatable("chesttracker.gui.editMemoryBank.compatibility.nameFilterMode"),
-                        (cycleButton, newValue) -> this.memoryBank.metadata().getCompatibilitySettings().nameFilterMode = newValue
+                        (cycleButton, newValue) -> this.memoryBank.metadata()
+                                .getCompatibilitySettings().nameFilterMode = newValue
                 ), SettingsTab.COMPATIBILITY);
 
-        addSetting(CycleButton.<NameRenderMode>builder(mode -> mode.label)
+        addSetting(CycleButton.<NameRenderMode>builder(mode -> mode.label,
+                                this.memoryBank.metadata().getCompatibilitySettings().nameRenderMode)
                 .withTooltip(mode -> Tooltip.create(mode.tooltip))
                 .withValues(NameRenderMode.values())
-                .withInitialValue(this.memoryBank.metadata().getCompatibilitySettings().nameRenderMode)
                 .create(getSettingsX(0),
                         getSettingsY(1),
                         getSettingsWidth(2),
                         BUTTON_HEIGHT,
                         translatable("chesttracker.gui.editMemoryBank.compatibility.nameRenderMode"),
-                        (cycleButton, newValue) -> this.memoryBank.metadata().getCompatibilitySettings().nameRenderMode = newValue
+                                (cycleButton, newValue) -> this.memoryBank.metadata()
+                                        .getCompatibilitySettings().nameRenderMode = newValue
                 ), SettingsTab.COMPATIBILITY);
     }
 
@@ -306,31 +312,38 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
                                 .getFilteringSettings().onlyRememberNamed = newValue
                 ), SettingsTab.FILTERING);
 
-        addSetting(CycleButton.<FilteringSettings.RememberedContainers>builder(remembered -> remembered.label)
-                              .displayOnlyValue()
-                              .withTooltip(remembered -> Tooltip.create(remembered.tooltip))
-                              .withValues(FilteringSettings.RememberedContainers.values())
-                              .withInitialValue(this.memoryBank.metadata().getFilteringSettings().rememberedContainers)
-                              .create(getSettingsX(1),
-                                      getSettingsY(1),
-                                      getSettingsWidth(1),
-                                      BUTTON_HEIGHT,
-                                      CommonComponents.EMPTY,
-                                      (cycleButton, remembered) -> this.memoryBank.metadata()
-                                                                                  .getFilteringSettings().rememberedContainers = remembered
-                              ), SettingsTab.FILTERING);
+        addSetting(
+                CycleButton.<FilteringSettings.RememberedContainers>builder(
+                                remembered -> remembered.label,
+                                this.memoryBank.metadata().getFilteringSettings().rememberedContainers
+                        )
+                        .displayOnlyValue()
+                        .withTooltip(remembered -> Tooltip.create(remembered.tooltip))
+                        .withValues(FilteringSettings.RememberedContainers.values())
+                        .create(
+                                getSettingsX(1),
+                                getSettingsY(1),
+                                getSettingsWidth(1),
+                                BUTTON_HEIGHT,
+                                CommonComponents.EMPTY,
+                                (cycleButton, remembered) ->
+                                        this.memoryBank.metadata().getFilteringSettings().rememberedContainers = remembered
+                        ),
+                SettingsTab.FILTERING
+        );
 
-        addSetting(CycleButton.<FilteringSettings.AutoAddPlacedBlocks>builder(remembered -> remembered.label)
-                              .withValues(FilteringSettings.AutoAddPlacedBlocks.values())
-                              .withInitialValue(this.memoryBank.metadata().getFilteringSettings().autoAddPlacedBlocks)
-                              .create(getSettingsX(0),
-                                      getSettingsY(2),
-                                      getSettingsWidth(2),
-                                      BUTTON_HEIGHT,
-                                      translatable("chesttracker.gui.editMemoryBank.filtering.autoAddPlacedBlocks"),
-                                      (cycleButton, autoAdd) -> this.memoryBank.metadata()
-                                                                               .getFilteringSettings().autoAddPlacedBlocks = autoAdd
-                              ), SettingsTab.FILTERING);
+        addSetting(CycleButton.<FilteringSettings.AutoAddPlacedBlocks>builder(
+                                remembered -> remembered.label,
+                                this.memoryBank.metadata().getFilteringSettings().autoAddPlacedBlocks)
+                .withValues(FilteringSettings.AutoAddPlacedBlocks.values())
+                .create(getSettingsX(0),
+                                getSettingsY(2),
+                                getSettingsWidth(2),
+                                BUTTON_HEIGHT,
+                                translatable("chesttracker.gui.editMemoryBank.filtering.autoAddPlacedBlocks"),
+                                (cycleButton, autoAdd) -> this.memoryBank.metadata()
+                                        .getFilteringSettings().autoAddPlacedBlocks = autoAdd
+                                ), SettingsTab.FILTERING);
 
         addSetting(CycleButton.onOffBuilder(this.memoryBank.metadata().getFilteringSettings().rememberEnderChests)
                               .withTooltip(b -> Tooltip.create(translatable("chesttracker.gui.editMemoryBank.filtering.rememberEnderChests.tooltip")))
@@ -360,18 +373,20 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
                                                                                 .getIntegritySettings().preserveNamed = newValue
                               ), SettingsTab.INTEGRITY);
 
-        addSetting(CycleButton.<IntegritySettings.LifetimeCountMode>builder(mode -> mode.label)
-                              .withValues(IntegritySettings.LifetimeCountMode.values())
-                              .withInitialValue(this.memoryBank.metadata().getIntegritySettings().lifetimeCountMode)
-                              .displayOnlyValue()
-                              .create(getSettingsX(1),
-                                      getSettingsY(0),
-                                      getSettingsWidth(1),
-                                      BUTTON_HEIGHT,
-                                      translatable("chesttracker.gui.editMemoryBank.integrity.lifetimeCountMode"),
-                                      ((cycleButton, countMode) -> this.memoryBank.metadata()
-                                                                                  .getIntegritySettings().lifetimeCountMode = countMode)
-                              ), SettingsTab.INTEGRITY);
+        addSetting(
+                CycleButton.<IntegritySettings.LifetimeCountMode>builder(
+                                mode -> mode.label,
+                                this.memoryBank.metadata().getIntegritySettings().lifetimeCountMode)
+                        .withValues(IntegritySettings.LifetimeCountMode.values())
+                        .displayOnlyValue()
+                        .create(getSettingsX(1),
+                                getSettingsY(0),
+                                getSettingsWidth(1),
+                                BUTTON_HEIGHT,
+                                translatable("chesttracker.gui.editMemoryBank.integrity.lifetimeCountMode"),
+                                (cycleButton, countMode) -> this.memoryBank.metadata()
+                                        .getIntegritySettings().lifetimeCountMode = countMode
+                        ), SettingsTab.INTEGRITY);
 
         addSetting(new EnumSlider<>(getSettingsX(0),
                                     getSettingsY(1),
@@ -563,18 +578,19 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
             }
         }, SettingsTab.SEARCH);
 
-        addSetting(CycleButton.<StackMergeMode>builder(mode -> mode.label)
-                .withValues(StackMergeMode.values())
-                .withTooltip(ignored -> Tooltip.create(translatable("chesttracker.gui.editMemoryBank.search.stackMergeMode.tooltip")))
-                .withInitialValue(this.memoryBank.metadata().getSearchSettings().stackMergeMode)
-                .create(getSettingsX(0),
-                        getSettingsY(2),
-                        getSettingsWidth(2),
-                        BUTTON_HEIGHT,
-                        translatable("chesttracker.gui.editMemoryBank.search.stackMergeMode"),
-                        ((cycleButton, stackMergeMode) -> this.memoryBank.metadata()
-                                .getSearchSettings().stackMergeMode = stackMergeMode)
-                ), SettingsTab.SEARCH);
+        addSetting(CycleButton.<StackMergeMode>builder(
+                                mode -> mode.label,
+                                this.memoryBank.metadata().getSearchSettings().stackMergeMode)
+                        .withValues(StackMergeMode.values())
+                        .withTooltip(ignored -> Tooltip.create(translatable("chesttracker.gui.editMemoryBank.search.stackMergeMode.tooltip")))
+                        .create(getSettingsX(0),
+                                getSettingsY(2),
+                                getSettingsWidth(2),
+                                BUTTON_HEIGHT,
+                                translatable("chesttracker.gui.editMemoryBank.search.stackMergeMode"),
+                                (cycleButton, stackMergeMode) -> this.memoryBank.metadata()
+                                        .getSearchSettings().stackMergeMode = stackMergeMode
+                        ), SettingsTab.SEARCH);
 
         addSetting(CycleButton.onOffBuilder(this.memoryBank.metadata().getSearchSettings().unpackNested)
                 .withTooltip(ignored -> Tooltip.create(translatable("chesttracker.gui.editMemoryBank.search.unpackNested.tooltip")))

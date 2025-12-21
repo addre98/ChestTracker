@@ -3,7 +3,7 @@ package red.jackf.chesttracker.api.providers;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 import red.jackf.chesttracker.api.ClientBlockSource;
@@ -54,7 +54,7 @@ public abstract class ServerProvider {
      *
      * @return An (ideally unique) identifier for this provider.
      */
-    public abstract ResourceLocation id();
+    public abstract Identifier id();
 
     /**
      * Whether this provider should apply to a given connection. Commonly used to filter by server IPs:
@@ -173,8 +173,8 @@ public abstract class ServerProvider {
      * @return An optional containing the local player's current memory key, or an empty optional if not in a key.
      */
     @ApiStatus.OverrideOnly
-    public Optional<ResourceLocation> getPlayersCurrentKey(Level level, LocalPlayer player) {
-        return Optional.of(level.dimension().location());
+    public Optional<Identifier> getPlayersCurrentKey(Level level, LocalPlayer player) {
+        return Optional.of(level.dimension().identifier());
     }
 
     /**

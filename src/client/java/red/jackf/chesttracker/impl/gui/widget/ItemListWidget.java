@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ItemListWidget extends AbstractWidget {
-    private static final ResourceLocation BACKGROUND_SPRITE = GuiUtil.sprite("widgets/slot_background");
+    private static final Identifier BACKGROUND_SPRITE = GuiUtil.sprite("widgets/slot_background");
     private static final ItemStack DUMMY_ITEM_FOR_COUNT = new ItemStack(Items.EMERALD);
 
     private final int gridWidth;

@@ -56,10 +56,10 @@
   },
   "depends": {
     "fabricloader": ">=0.17.3",
-    "minecraft": ">=1.21.10",
+    "minecraft": ">=1.21.11",
     "java": ">=21",
     "fabric-api": "*",
-    "yet_another_config_lib_v3": ">=3.8.0"
+    "yet_another_config_lib_v3": ">=3.8.1"
   },
   "recommends": {
     "searchables": "*"

@@ -11,7 +11,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.phys.Vec3;
@@ -72,7 +72,7 @@ public class ChestTrackerScreen extends Screen {
     @Nullable
     private ResizeWidget resize = null;
     private VerticalScrollWidget scroll;
-    private ResourceLocation currentMemoryKey;
+    private Identifier currentMemoryKey;
     private List<ItemStack> items = Collections.emptyList();
 
     public ChestTrackerScreen(@Nullable Screen parent) {
@@ -236,7 +236,7 @@ public class ChestTrackerScreen extends Screen {
                 .sorted(Misc.bringToFront(bank.getMetadata()
                         .getVisualSettings()
                         .getKeyOrder())).toList();
-        Map<ResourceLocation, ItemButton> buttons = new HashMap<>();
+        Map<Identifier, ItemButton> buttons = new HashMap<>();
 
         for (int index = 0; index < todo.size(); index++) {
             var resloc = todo.get(index);
@@ -370,7 +370,7 @@ public class ChestTrackerScreen extends Screen {
     }
 
     @Override
-    public boolean charTyped(CharacterEvent event) {
+    public boolean charTyped(@NotNull CharacterEvent event) {
         if (ignoreTextInput) {
             return false;
         }
@@ -378,13 +378,13 @@ public class ChestTrackerScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
+    public boolean keyPressed(@NotNull KeyEvent event) {
         this.ignoreTextInput = false;
         return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
         if (resize != null && resize.isMouseOver(event.x(), event.y())) {
             boolean handled = resize.mouseClicked(event, isDoubleClick);
             if (handled) return true;
@@ -396,7 +396,7 @@ public class ChestTrackerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(@NotNull MouseButtonEvent event) {
         if (resize != null) {
             boolean handled = resize.mouseReleased(event);
             if (handled) return true;
@@ -405,7 +405,7 @@ public class ChestTrackerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+    public boolean mouseDragged(@NotNull MouseButtonEvent event, double mouseX, double mouseY) {
         if (resize != null && resize.mouseDragged(event, mouseX, mouseY)) {
             return true;
         }

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +16,7 @@ import red.jackf.chesttracker.impl.util.GuiUtil;
 import java.util.function.Consumer;
 
 public class VerticalScrollWidget extends AbstractWidget {
-    private static final ResourceLocation BACKGROUND = GuiUtil.sprite("nine_patch/scroll_bar");
+    private static final Identifier BACKGROUND = GuiUtil.sprite("nine_patch/scroll_bar");
     private static final WidgetSprites HANDLE_TEXTURE = new WidgetSprites(GuiUtil.sprite("widgets/scroll_bar/handle"),
                                                                           GuiUtil.sprite("widgets/scroll_bar/handle_disabled"),
                                                                           GuiUtil.sprite("widgets/scroll_bar/handle"),

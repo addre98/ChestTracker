@@ -7,12 +7,12 @@ import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.gui.YACLScreen;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.io.FileUtils;
 import red.jackf.chesttracker.impl.compat.Compatibility;
 import red.jackf.chesttracker.impl.gui.GuiConstants;
@@ -52,11 +52,11 @@ public class ChestTrackerConfigScreenBuilder {
     ///////////
     // UTILS //
     ///////////
-    private static ResourceLocation getDescriptionImage(String basePath, boolean value) {
+    private static Identifier getDescriptionImage(String basePath, boolean value) {
         return GuiUtil.sprite("textures/gui/config/%s_%s.png".formatted(basePath, value ? "enabled" : "disabled"));
     }
 
-    private static ResourceLocation getDescriptionImage(String basePath) {
+    private static Identifier getDescriptionImage(String basePath) {
         return GuiUtil.sprite("textures/gui/config/%s.png".formatted(basePath));
     }
 

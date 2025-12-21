@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.gui.util;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import red.jackf.chesttracker.impl.ChestTracker;
@@ -20,7 +20,7 @@ import java.util.function.Function;
  * Reads colours from an image every reload. Used to get text colours .
  */
 public class ImagePixelReader {
-    private static final ResourceLocation TEXTURE = ChestTracker.id("textures/gui/text_colours.png");
+    private static final Identifier TEXTURE = ChestTracker.id("textures/gui/text_colours.png");
 
     private ImagePixelReader() {
     }
@@ -43,7 +43,7 @@ public class ImagePixelReader {
 
     public static class TitleListener implements SimpleResourceReloadListener<List<Integer>> {
         @Override
-        public ResourceLocation getFabricId() {
+        public Identifier getFabricId() {
             return ChestTracker.id("pixel_colour_listener");
         }
 

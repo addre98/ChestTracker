@@ -6,7 +6,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -34,11 +34,11 @@ import java.util.stream.Stream;
  * Provider for Hypixel SMP and Hypixel Skyblock.
  */
 public class HypixelProvider extends ServerProvider {
-    public static final ResourceLocation SKYBLOCK_PRIVATE_ISLAND = ResourceLocation.fromNamespaceAndPath("hypixel", "skyblock_private");
-    public static final ResourceLocation SKYBLOCK_ENDER_CHEST = ResourceLocation.fromNamespaceAndPath("hypixel", "skyblock_ender_chest");
-    public static final ResourceLocation SKYBLOCK_BACKBACKS = ResourceLocation.fromNamespaceAndPath("hypixel", "skyblock_backpacks");
-    public static final ResourceLocation SKYBLOCK_SACKS = ResourceLocation.fromNamespaceAndPath("hypixel", "skyblock_sacks");
-    public static final ResourceLocation SKYBLOCK_VAULT = ResourceLocation.fromNamespaceAndPath("hypixel", "skyblock_vault");
+    public static final Identifier SKYBLOCK_PRIVATE_ISLAND = Identifier.fromNamespaceAndPath("hypixel", "skyblock_private");
+    public static final Identifier SKYBLOCK_ENDER_CHEST = Identifier.fromNamespaceAndPath("hypixel", "skyblock_ender_chest");
+    public static final Identifier SKYBLOCK_BACKBACKS = Identifier.fromNamespaceAndPath("hypixel", "skyblock_backpacks");
+    public static final Identifier SKYBLOCK_SACKS = Identifier.fromNamespaceAndPath("hypixel", "skyblock_sacks");
+    public static final Identifier SKYBLOCK_VAULT = Identifier.fromNamespaceAndPath("hypixel", "skyblock_vault");
 
     private static final List<MemoryKeyIcon> ICONS = Streams.concat(Stream.of(
             new MemoryKeyIcon(SKYBLOCK_PRIVATE_ISLAND, Items.OAK_SAPLING.getDefaultInstance()),
@@ -51,7 +51,7 @@ public class HypixelProvider extends ServerProvider {
     private boolean isOnSMP = false;
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ChestTracker.id("hypixel");
     }
 
@@ -184,7 +184,7 @@ public class HypixelProvider extends ServerProvider {
     }
 
     @Override
-    public Optional<ResourceLocation> getPlayersCurrentKey(Level level, LocalPlayer player) {
+    public Optional<Identifier> getPlayersCurrentKey(Level level, LocalPlayer player) {
         if (Skyblock.isOnPrivateIsland()) {
             return Optional.of(SKYBLOCK_PRIVATE_ISLAND);
         } else if (this.isOnSMP) {

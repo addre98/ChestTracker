@@ -50,7 +50,7 @@ public class DeveloperOverlay {
                     var source = InteractionTracker.INSTANCE.getLastBlockSource();
                     var sourceStr = source.map(blockSource -> blockSource.pos()
                             .toShortString() + "@" + blockSource.level()
-                            .dimension().location()).orElse("<none>");
+                            .dimension().identifier()).orElse("<none>");
                     lines.add("Location: " + sourceStr);
                 }, () -> lines.add("No memory bank loaded"));
             }

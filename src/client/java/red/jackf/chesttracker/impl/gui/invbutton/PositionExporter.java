@@ -2,7 +2,7 @@ package red.jackf.chesttracker.impl.gui.invbutton;
 
 import com.mojang.serialization.JsonOps;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.io.FileUtils;

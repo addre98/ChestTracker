@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.screen;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import red.jackf.chesttracker.impl.memory.MemoryKeyImpl;
@@ -20,21 +20,21 @@ public interface MemoryBankView {
 
     Metadata metadata();
 
-    List<ResourceLocation> keys();
+    List<Identifier> keys();
 
     @Nullable
-    MemoryKeyImpl getMemories(ResourceLocation memoryKey);
+    MemoryKeyImpl getMemories(Identifier memoryKey);
 
-    void removeKey(ResourceLocation id);
+    void removeKey(Identifier id);
 
-    void remove(ResourceLocation id, BlockPos pos);
+    void remove(Identifier id, BlockPos pos);
 
     void save();
 
     static MemoryBankView of(MemoryBankImpl bank) {
         return new MemoryBankView() {
             private final Metadata copy = bank.getMetadata().deepCopy();
-            private final List<ResourceLocation> toRemove = new ArrayList<>();
+            private final List<Identifier> toRemove = new ArrayList<>();
 
             @Override
             public String id() {
@@ -47,28 +47,28 @@ public interface MemoryBankView {
             }
 
             @Override
-            public List<ResourceLocation> keys() {
+            public List<Identifier> keys() {
                 return copy.getVisualSettings().getKeyOrder();
             }
 
             @Override
-            public @Nullable MemoryKeyImpl getMemories(ResourceLocation memoryKey) {
+            public @Nullable MemoryKeyImpl getMemories(Identifier memoryKey) {
                 return bank.getKeyInternal(memoryKey).orElse(null);
             }
 
             @Override
-            public void removeKey(ResourceLocation id) {
+            public void removeKey(Identifier id) {
                 toRemove.add(id);
                 copy.getVisualSettings().removeIcon(id);
             }
 
             @Override
-            public void remove(ResourceLocation id, BlockPos pos) {
+            public void remove(Identifier id, BlockPos pos) {
                 bank.removeMemory(id, pos);
             }
 
             public void save() {
-                for (ResourceLocation key : toRemove)
+                for (Identifier key : toRemove)
                     bank.removeKey(key);
                 bank.setMetadata(copy);
                 Storage.save(bank);
@@ -89,20 +89,20 @@ public interface MemoryBankView {
             }
 
             @Override
-            public List<ResourceLocation> keys() {
+            public List<Identifier> keys() {
                 return Collections.emptyList();
             }
 
             @Override
-            public @Nullable MemoryKeyImpl getMemories(ResourceLocation memoryKey) {
+            public @Nullable MemoryKeyImpl getMemories(Identifier memoryKey) {
                 return null;
             }
 
             @Override
-            public void removeKey(ResourceLocation id) {}
+            public void removeKey(Identifier id) {}
 
             @Override
-            public void remove(ResourceLocation id, BlockPos pos) {}
+            public void remove(Identifier id, BlockPos pos) {}
 
             public void save() {}
         };

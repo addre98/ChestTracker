@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +64,7 @@ public class JsonBackend extends FileBasedBackend {
             }
             return null;
         });
-        Map<ResourceLocation, MemoryKeyImpl> data = result.getFirst() == null ? new HashMap<>() : result.getFirst();
+        Map<Identifier, MemoryKeyImpl> data = result.getFirst() == null ? new HashMap<>() : result.getFirst();
         LOGGER.debug("Loaded {} in {}ns", dataPath, result.getSecond());
         return new MemoryBankImpl(metadata.get(), data);
     }

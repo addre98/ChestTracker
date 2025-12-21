@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.compat.mods.wthit;
 import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import red.jackf.chesttracker.impl.ChestTracker;
 
@@ -11,8 +11,8 @@ public class ChestTrackerWTHITPlugin implements IWailaPlugin {
     // call after WTHIT's default handler, so we can skip lookup if installed on server
     private static final int PRIORITY = 1550 + 25;
 
-    protected static final ResourceLocation CONFIG_SHOW_TEXT = ChestTracker.id("show_text");
-    protected static final ResourceLocation CONFIG_SHOW_KEY_AND_LOCATION = ChestTracker.id("show_key_and_location");
+    protected static final Identifier CONFIG_SHOW_TEXT = ChestTracker.id("show_text");
+    protected static final Identifier CONFIG_SHOW_KEY_AND_LOCATION = ChestTracker.id("show_key_and_location");
 
     @Override
     public void register(IRegistrar registrar) {

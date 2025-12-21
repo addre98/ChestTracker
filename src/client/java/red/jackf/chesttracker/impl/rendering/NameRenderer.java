@@ -2,12 +2,13 @@ package red.jackf.chesttracker.impl.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.BlockHitResult;
@@ -98,11 +99,11 @@ public class NameRenderer {
     public static void renderLabels(PoseStack ignoredPoseStack, Camera camera, MultiBufferSource consumers) {
         if (scheduledLabels.isEmpty()) return;
 
-        Vec3 camPos = camera.getPosition();
+        Vec3 camPos = camera.position();
 
         PoseStack pose = new PoseStack();
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(camera.getYRot() + 180f));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(camera.yRot() + 180f));
 
         scheduledLabels.stream()
                 .sorted(Comparator.comparingDouble(label -> -camPos.distanceToSqr(label.position)))
@@ -121,8 +122,8 @@ public class NameRenderer {
         pose.translate(xOffset, yOffset, zOffset);
 
         // Additional rotation for billboard
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-camera.getYRot()));
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(-camera.yRot()));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.xRot()));
 
         // Scale
         float scale = 0.025f;
@@ -134,7 +135,7 @@ public class NameRenderer {
         float x = -width / 2f;
 
         // Background
-        VertexConsumer bgBuffer = consumers.getBuffer(RenderType.textBackgroundSeeThrough());
+        VertexConsumer bgBuffer = consumers.getBuffer(RenderTypes.textBackgroundSeeThrough());
         int bgColour = ((int)(MC.options.getBackgroundOpacity(0.25F) * 255F)) << 24;
         bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
         bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);

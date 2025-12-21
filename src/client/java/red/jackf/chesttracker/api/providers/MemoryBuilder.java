@@ -2,7 +2,7 @@ package red.jackf.chesttracker.api.providers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ public interface MemoryBuilder {
      * @param position Position that this entry is located at.
      * @return A result representing this builder and the given key and position.
      */
-    DefaultProviderScreenClose.Result toResult(ResourceLocation key, BlockPos position);
+    DefaultProviderScreenClose.Result toResult(Identifier key, BlockPos position);
 
     /**
      * Build the memory from the given data.

@@ -8,7 +8,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import red.jackf.chesttracker.impl.util.GuiUtil;
 import java.util.function.BiConsumer;
 
 public class ResizeWidget extends AbstractWidget {
-    private static final ResourceLocation TEXTURE = GuiUtil.png("widgets/resize");
+    private static final Identifier TEXTURE = GuiUtil.png("widgets/resize");
     private static final int SIZE = 10;
     private final int stepSize;
     private final int currentWidth;

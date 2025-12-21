@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,6 @@ import red.jackf.chesttracker.impl.providers.InteractionTrackerImpl;
 import red.jackf.chesttracker.impl.providers.ProviderHandler;
 import red.jackf.chesttracker.impl.providers.ScreenCloseContextImpl;
 import red.jackf.chesttracker.impl.providers.ScreenOpenContextImpl;
-import red.jackf.chesttracker.impl.rendering.NameRenderer;
 import red.jackf.chesttracker.impl.storage.ConnectionSettings;
 import red.jackf.chesttracker.impl.storage.Storage;
 import red.jackf.whereisit.client.api.events.ShouldIgnoreKey;
@@ -45,8 +44,8 @@ import java.util.Optional;
 public class ChestTracker implements ClientModInitializer {
     public static final String ID = "chesttracker";
 
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(ID, path);
     }
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -57,7 +56,7 @@ public class ChestTracker implements ClientModInitializer {
         return LogManager.getLogger(ChestTracker.class.getCanonicalName() + "/" + suffix);
     }
     public static final KeyMapping.Category CHESTTRACKER_CATEGORY =
-            new KeyMapping.Category(ResourceLocation.tryParse("chesttracker:title"));
+            new KeyMapping.Category(Identifier.tryParse("chesttracker:title"));
     public static final KeyMapping OPEN_GUI = KeyBindingHelper.registerKeyBinding(
             new KeyMapping("key.chesttracker.open_gui", InputConstants.Type.KEYSYM, InputConstants.KEY_GRAVE, CHESTTRACKER_CATEGORY)
     );

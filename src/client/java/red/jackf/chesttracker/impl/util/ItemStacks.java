@@ -7,7 +7,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public class ItemStacks {
     }
 
     private static boolean testHolder(Holder<?> holder, String filter) {
-        return holder.unwrapKey().map(key -> key.location().toString().toLowerCase().contains(filter)).orElse(false);
+        return holder.unwrapKey().map(key -> key.identifier().toString().toLowerCase().contains(filter)).orElse(false);
     }
 
     public static boolean defaultPredicate(ItemStack stack, String filter) {
@@ -107,7 +107,7 @@ public class ItemStacks {
             String potionName = potionContents.customName().or(() -> potionContents.potion().map(holder -> holder.value().name())).orElse("empty");
             String langKey = stack.getItem().getDescriptionId() + ".effect." + potionName;
             if (testLang(langKey, filter)) return true;
-            ResourceLocation resloc = BuiltInRegistries.POTION.getKey(potionContents.potion().get().value());
+            Identifier resloc = BuiltInRegistries.POTION.getKey(potionContents.potion().get().value());
             if (resloc != null && resloc.toString().contains(filter)) return true;
         }
 
@@ -116,7 +116,7 @@ public class ItemStacks {
         for (MobEffectInstance effect : effects) {
             String langKey = effect.getDescriptionId();
             if (testLang(langKey, filter)) return true;
-            ResourceLocation resloc = BuiltInRegistries.MOB_EFFECT.getKey(effect.getEffect().value());
+            Identifier resloc = BuiltInRegistries.MOB_EFFECT.getKey(effect.getEffect().value());
             if (resloc != null && resloc.toString().contains(filter)) return true;
         }
 

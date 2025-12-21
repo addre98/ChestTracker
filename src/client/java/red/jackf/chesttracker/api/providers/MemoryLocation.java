@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.api.providers;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -14,7 +14,7 @@ public sealed interface MemoryLocation permits MemoryLocation.InWorld, MemoryLoc
     /**
      * @return The memory key defined for this location.
      */
-    ResourceLocation memoryKey();
+    Identifier memoryKey();
 
     /**
      * The block position defined for this location. This should generally be linked to a given world position if not
@@ -38,7 +38,7 @@ public sealed interface MemoryLocation permits MemoryLocation.InWorld, MemoryLoc
      * @param position  Block position for the new location. Should generally match a position in-world.
      * @return A new in-world memory location.
      */
-    static MemoryLocation inWorld(ResourceLocation memoryKey, BlockPos position) {
+    static MemoryLocation inWorld(Identifier memoryKey, BlockPos position) {
         return new InWorld(memoryKey, position);
     }
 
@@ -49,12 +49,12 @@ public sealed interface MemoryLocation permits MemoryLocation.InWorld, MemoryLoc
      * @param position  Block position for the new location.
      * @return A new override memory location.
      */
-    static MemoryLocation override(ResourceLocation memoryKey, BlockPos position) {
+    static MemoryLocation override(Identifier memoryKey, BlockPos position) {
         return new Override(memoryKey, position);
     }
 
     @ApiStatus.Internal
-    record InWorld(ResourceLocation memoryKey, BlockPos position) implements MemoryLocation {
+    record InWorld(Identifier memoryKey, BlockPos position) implements MemoryLocation {
         @java.lang.Override
         public boolean isOverride() {
             return false;
@@ -62,7 +62,7 @@ public sealed interface MemoryLocation permits MemoryLocation.InWorld, MemoryLoc
     }
 
     @ApiStatus.Internal
-    record Override(ResourceLocation memoryKey, BlockPos position) implements MemoryLocation {
+    record Override(Identifier memoryKey, BlockPos position) implements MemoryLocation {
         @java.lang.Override
         public boolean isOverride() {
             return true;

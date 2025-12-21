@@ -2,7 +2,7 @@ package red.jackf.chesttracker.impl.memory.metadata;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import red.jackf.chesttracker.api.providers.MemoryKeyIcon;
 import red.jackf.chesttracker.api.providers.ProviderUtils;
@@ -37,7 +37,7 @@ public class VisualSettings {
     public boolean useDefaultIconOrder = true;
 
 
-    public List<ResourceLocation> getKeyOrder() {
+    public List<Identifier> getKeyOrder() {
         return icons.stream().map(MemoryKeyIcon::id).toList();
     }
 
@@ -46,7 +46,7 @@ public class VisualSettings {
         this.useDefaultIconOrder = false;
     }
 
-    public ItemStack getOrCreateIcon(ResourceLocation key) {
+    public ItemStack getOrCreateIcon(Identifier key) {
         for (MemoryKeyIcon icon : icons)
             if (icon.id().equals(key)) return icon.icon();
 
@@ -61,7 +61,7 @@ public class VisualSettings {
         return newIcon.icon();
     }
 
-    public void setIcon(ResourceLocation key, ItemStack icon) {
+    public void setIcon(Identifier key, ItemStack icon) {
         var existingIndex = IntStream.range(0, icons.size())
                 .filter(index -> icons.get(index).id().equals(key))
                 .findFirst();
@@ -74,7 +74,7 @@ public class VisualSettings {
         reorderIfNecessary();
     }
 
-    public void removeIcon(ResourceLocation key) {
+    public void removeIcon(Identifier key) {
         var iter = icons.iterator();
         while (iter.hasNext()) {
             if (iter.next().id().equals(key)) {
@@ -88,7 +88,7 @@ public class VisualSettings {
         if (!this.useDefaultIconOrder) return;
 
         ServerProvider provider = ProviderUtils.getCurrentProvider().orElse(null);
-        if (provider == null) return;;
+        if (provider == null) return;
 
         var iconKeys = provider.getMemoryKeyIcons().stream().map(MemoryKeyIcon::id).toList();
 

@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.api.providers;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import red.jackf.chesttracker.api.ClientBlockSource;
@@ -35,7 +35,7 @@ public interface ProviderUtils {
      *
      * @return The player's current memory key.
      */
-    static Optional<ResourceLocation> getPlayersCurrentKey() {
+    static Optional<Identifier> getPlayersCurrentKey() {
         return ProviderHandler.INSTANCE.getCurrentProvider().flatMap(provider -> {
             var level = Minecraft.getInstance().level;
             var player = Minecraft.getInstance().player;

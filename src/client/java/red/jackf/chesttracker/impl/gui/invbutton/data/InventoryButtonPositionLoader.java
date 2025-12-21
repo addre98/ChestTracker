@@ -5,7 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.Logger;
@@ -32,8 +32,8 @@ public class InventoryButtonPositionLoader implements SimpleResourceReloadListen
             Map<String, ButtonPosition> positions = new HashMap<>();
 
             for (var entry : LISTER.listMatchingResources(manager).entrySet()) {
-                ResourceLocation file = entry.getKey();
-                ResourceLocation id = LISTER.fileToId(file);
+                Identifier file = entry.getKey();
+                Identifier id = LISTER.fileToId(file);
 
                 Resource resource = entry.getValue();
                 try (Reader reader = resource.openAsReader()) {
@@ -65,7 +65,7 @@ public class InventoryButtonPositionLoader implements SimpleResourceReloadListen
     }
 
     @Override
-    public ResourceLocation getFabricId() {
+    public Identifier getFabricId() {
         return ChestTracker.id("button_position_loader");
     }
 }

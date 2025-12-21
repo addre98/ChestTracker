@@ -3,7 +3,7 @@ package red.jackf.chesttracker.api.providers.defaults;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import red.jackf.chesttracker.api.ClientBlockSource;
@@ -38,7 +38,7 @@ public class DefaultProvider extends ServerProvider {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ChestTracker.id("default_provider");
     }
 

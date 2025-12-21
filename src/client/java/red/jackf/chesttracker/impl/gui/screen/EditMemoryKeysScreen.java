@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import red.jackf.chesttracker.impl.gui.GuiConstants;
@@ -28,8 +28,8 @@ public class EditMemoryKeysScreen extends BaseUtilScreen {
     private static final int NAME_BOX_MARGIN = 1;
     private final Screen parent;
     private final MemoryBankView bankView;
-    private final Map<ResourceLocation, EditBox> editBoxes = new HashMap<>();
-    private final Map<ResourceLocation, DragHandleWidget> dragHandles = new HashMap<>();
+    private final Map<Identifier, EditBox> editBoxes = new HashMap<>();
+    private final Map<Identifier, DragHandleWidget> dragHandles = new HashMap<>();
 
     private boolean firstLoad = false;
     private boolean scheduleRebuild = false;
@@ -66,7 +66,7 @@ public class EditMemoryKeysScreen extends BaseUtilScreen {
         final int workingWidth = this.menuWidth - 2 * GuiConstants.MARGIN;
         final int spacing = GuiConstants.SMALL_MARGIN;
         final int startY = this.top + CONTENT_TOP;
-        final List<ResourceLocation> keys = bankView.keys();
+        final List<Identifier> keys = bankView.keys();
 
         for (var index = 0; index < keys.size(); index++) {
             var key = keys.get(index);

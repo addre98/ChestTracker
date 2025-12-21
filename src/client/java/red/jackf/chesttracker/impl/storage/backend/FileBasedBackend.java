@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.storage.backend;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;

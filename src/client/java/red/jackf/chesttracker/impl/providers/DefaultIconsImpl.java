@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.providers;
 
 import com.google.common.collect.Lists;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import red.jackf.chesttracker.api.memory.CommonKeys;
 import red.jackf.chesttracker.api.providers.MemoryKeyIcon;
@@ -28,7 +28,7 @@ public class DefaultIconsImpl {
         ICONS.add(icon);
     }
 
-    public static void registerIconAbove(ResourceLocation target, MemoryKeyIcon icon) {
+    public static void registerIconAbove(Identifier target, MemoryKeyIcon icon) {
         int targetIndex = 0;
         while (targetIndex < ICONS.size() && !ICONS.get(targetIndex).id().equals(target)) {
             targetIndex++;
@@ -37,7 +37,7 @@ public class DefaultIconsImpl {
         ICONS.add(targetIndex, icon);
     }
 
-    public static void registerIconBelow(ResourceLocation target, MemoryKeyIcon icon) {
+    public static void registerIconBelow(Identifier target, MemoryKeyIcon icon) {
         int targetIndex = 0;
         while (targetIndex < ICONS.size() && !ICONS.get(targetIndex).id().equals(target)) {
             targetIndex++;

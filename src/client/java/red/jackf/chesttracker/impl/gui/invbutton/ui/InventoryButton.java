@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.invbutton.ui;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -112,7 +112,7 @@ public class InventoryButton extends AbstractWidget {
             this.showExtraButtons(false);
         }
 
-        ResourceLocation texture = TEXTURE.get(this.isActive(), this.isHoveredOrFocused());
+        Identifier texture = TEXTURE.get(this.isActive(), this.isHoveredOrFocused());
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, this.getX() - 1, this.getY() - 1, IMAGE_SIZE, IMAGE_SIZE, -1);
 
         for (AbstractWidget secondary : this.secondaryButtons) {

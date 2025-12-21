@@ -2,7 +2,7 @@ package red.jackf.chesttracker.api.providers;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import red.jackf.chesttracker.impl.util.ModCodecs;
 import red.jackf.jackfredlib.api.base.codecs.JFLCodecs;
@@ -13,10 +13,10 @@ import red.jackf.jackfredlib.api.base.codecs.JFLCodecs;
  * @param id Memory Key ID this icon is for.
  * @param icon ItemStack to be displayed as the icon for this key.
  */
-public record MemoryKeyIcon(ResourceLocation id, ItemStack icon) {
+public record MemoryKeyIcon(net.minecraft.resources.Identifier id, ItemStack icon) {
     public static final Codec<MemoryKeyIcon> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    ResourceLocation.CODEC.fieldOf("id").forGetter(MemoryKeyIcon::id),
+                    Identifier.CODEC.fieldOf("id").forGetter(MemoryKeyIcon::id),
                     JFLCodecs.firstInList(
                             ItemStack.SINGLE_ITEM_CODEC,
                             ModCodecs.ITEM_STACK_IGNORE_COUNT

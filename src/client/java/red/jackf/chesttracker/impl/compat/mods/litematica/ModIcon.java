@@ -1,9 +1,9 @@
 package red.jackf.chesttracker.impl.compat.mods.litematica;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import red.jackf.chesttracker.impl.ChestTracker;
 
 public enum ModIcon implements IGuiIcon {
@@ -30,12 +30,12 @@ public enum ModIcon implements IGuiIcon {
     }
 
     @Override
-    public void renderAt(GuiGraphics graphics, int x, int y, float zLevel, boolean enabled, boolean selected) {
-        RenderUtils.drawTexturedRect(graphics, this.getTexture(), x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), zLevel);
+    public void renderAt(GuiContext ctx, int x, int y, float zLevel, boolean enabled, boolean selected) {
+        RenderUtils.drawTexturedRect(ctx, this.getTexture(), x, y, this.getU(), this.getV(), this.getWidth(), this.getHeight(), zLevel);
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return ChestTracker.id("textures/gui/litematica_icon.png");
     }
 }

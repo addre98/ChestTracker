@@ -5,19 +5,19 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import red.jackf.chesttracker.impl.ChestTracker;
 
 public class GuiUtil {
-    public static final ResourceLocation BACKGROUND_SPRITE = sprite("nine_patch/background");
-    public static final ResourceLocation SEARCH_BAR_SPRITE = sprite("nine_patch/search_bar");
+    public static final Identifier BACKGROUND_SPRITE = sprite("nine_patch/background");
+    public static final Identifier SEARCH_BAR_SPRITE = sprite("nine_patch/search_bar");
 
-    public static ResourceLocation sprite(String path) {
-        return ResourceLocation.fromNamespaceAndPath(ChestTracker.ID, path);
+    public static Identifier sprite(String path) {
+        return Identifier.fromNamespaceAndPath(ChestTracker.ID, path);
     }
 
-    public static ResourceLocation png(String path) {
-        return ResourceLocation.fromNamespaceAndPath(ChestTracker.ID, "textures/gui/sprites/" + path + ".png");
+    public static Identifier png(String path) {
+        return Identifier.fromNamespaceAndPath(ChestTracker.ID, "textures/gui/sprites/" + path + ".png");
     }
 
     public static WidgetSprites twoSprite(String path) {

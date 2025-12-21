@@ -3,7 +3,7 @@ package red.jackf.chesttracker.api.providers.defaults;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import red.jackf.chesttracker.api.EventPhases;
 import red.jackf.chesttracker.api.memory.Memory;
 import red.jackf.chesttracker.api.providers.InteractionTracker;
@@ -23,7 +23,7 @@ import red.jackf.jackfredlib.api.base.ResultHolder;
 public interface DefaultProviderScreenClose {
     /**
      * Event for building memories on screen close for the default provider. Uses the phases in {@link EventPhases} in order
-     * to allow for overridable defaults; if this isn't enough use {@link Event#addPhaseOrdering(ResourceLocation, ResourceLocation)}
+     * to allow for overridable defaults; if this isn't enough use {@link Event#addPhaseOrdering(Identifier, Identifier)}
      * with your own.
      *
      * @see EventPhases
@@ -61,5 +61,5 @@ public interface DefaultProviderScreenClose {
      * @param position Position in the key to place the memory
      * @param memory   Memory to add
      */
-    record Result(ResourceLocation key, BlockPos position, Memory memory) {}
+    record Result(Identifier key, BlockPos position, Memory memory) {}
 }
