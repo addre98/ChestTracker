@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.client.KeyMapping;
@@ -37,7 +38,9 @@ import red.jackf.chesttracker.impl.providers.ScreenCloseContextImpl;
 import red.jackf.chesttracker.impl.providers.ScreenOpenContextImpl;
 import red.jackf.chesttracker.impl.storage.ConnectionSettings;
 import red.jackf.chesttracker.impl.storage.Storage;
+import red.jackf.chesttracker.impl.storage.backend.NbtBackend;
 import red.jackf.whereisit.client.api.events.ShouldIgnoreKey;
+import static red.jackf.chesttracker.impl.storage.Storage.backend;
 
 import java.util.Optional;
 
@@ -148,6 +151,13 @@ public class ChestTracker implements ClientModInitializer {
                     });
                 else
                     LOGGER.debug("Blacklisted screen class, ignoring");
+            }
+        });
+        // Saving the .nbt file before closing game
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            LOGGER.info("Server stopping, waiting for ChestTracker saves...");
+            if (backend instanceof NbtBackend nbtBackend) {
+                nbtBackend.waitForPendingSaves();
             }
         });
 

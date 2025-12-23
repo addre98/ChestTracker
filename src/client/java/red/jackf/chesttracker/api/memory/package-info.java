@@ -18,7 +18,7 @@
  *
  * <p>If you want to get a list of all items in the current world, possibly within a range, use
  * {@link red.jackf.chesttracker.api.memory.MemoryBank#getCounts(
- *            net.minecraft.resources.ResourceLocation,
+ *            net.minecraft.resources.Identifier,
  *            red.jackf.chesttracker.api.memory.counting.CountingPredicate,
  *            red.jackf.chesttracker.api.memory.counting.StackMergeMode
  * )} along with a desired predicate.</p>
