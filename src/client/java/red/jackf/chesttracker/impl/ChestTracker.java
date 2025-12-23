@@ -81,10 +81,10 @@ public class ChestTracker implements ClientModInitializer {
         LOGGER.debug("Loading ChestTracker");
         // Register darkmode resourcepack
         ResourceLoader.registerBuiltinPack(
-                Identifier.fromNamespaceAndPath("chesttracker", "darkmode_texture"), // ID пака
+                Identifier.fromNamespaceAndPath("chesttracker", "darkmode_texture"),
                 FabricLoader.getInstance().getModContainer("chesttracker").orElseThrow(),
                 Component.literal("Chest Tracker (Unofficial port) - Dark Mode"),
-                PackActivationType.NORMAL // из v1 пакета
+                PackActivationType.NORMAL
         );
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
