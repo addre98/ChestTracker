@@ -23,7 +23,7 @@ public class Storage {
     //////////////
 
     private static final Logger LOGGER = ChestTracker.getLogger("Storage");
-    private static Backend backend;
+    public static Backend backend;
 
     public static void setBackend(Backend backend) {
         Storage.backend = backend;
