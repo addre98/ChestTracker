@@ -100,12 +100,11 @@ public class NameRenderer {
 
         Vec3 camPos = camera.getPosition();
 
-        // КЛЮЧЕВОЙ МОМЕНТ: Создаём PoseStack С ПОВОРОТАМИ КАМЕРЫ!
+        // Create PoseStack with camera rotation
         PoseStack pose = new PoseStack();
         pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
         pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(camera.getYRot() + 180f));
 
-        // Сортируем по удалению от камеры (дальше = раньше рисуем)
         scheduledLabels.stream()
                 .sorted(Comparator.comparingDouble(label -> -camPos.distanceToSqr(label.position)))
                 .forEach(label -> renderLabel(label, pose, camera, camPos, consumers));
@@ -116,17 +115,17 @@ public class NameRenderer {
     private static void renderLabel(ScheduledLabel label, PoseStack pose, Camera camera, Vec3 camPos, MultiBufferSource consumers) {
         pose.pushPose();
 
-        // Смещение от камеры
+        // Offset from the camera
         final double xOffset = label.position.x - camPos.x;
         final double yOffset = label.position.y - camPos.y;
         final double zOffset = label.position.z - camPos.z;
         pose.translate(xOffset, yOffset, zOffset);
 
-        // ВАЖНО: Дополнительный поворот для billboard
+        // Additional rotation for billboard
         pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-camera.getYRot()));
         pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
 
-        // Масштаб
+        // Scale
         float scale = 0.025f;
         pose.scale(-scale, -scale, scale);
 
@@ -135,7 +134,7 @@ public class NameRenderer {
         int width = font.width(label.text);
         float x = -width / 2f;
 
-        // Фон
+        // Background
         VertexConsumer bgBuffer = consumers.getBuffer(RenderType.textBackgroundSeeThrough());
         int bgColour = ((int)(MC.options.getBackgroundOpacity(0.25F) * 255F)) << 24;
         bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
@@ -143,7 +142,7 @@ public class NameRenderer {
         bgBuffer.addVertex(matrix, x + width, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
         bgBuffer.addVertex(matrix, x + width, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
 
-        // Текст
+        // Text
         font.drawInBatch(label.text, x, 0, 0xFFFFFFFF, false, matrix, consumers,
                 Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
 
