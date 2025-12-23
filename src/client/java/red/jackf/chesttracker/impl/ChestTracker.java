@@ -1,11 +1,16 @@
 package red.jackf.chesttracker.impl;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.nimbusds.oauth2.sdk.id.Identifier;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.client.KeyMapping;
@@ -38,9 +43,13 @@ import red.jackf.chesttracker.impl.providers.ScreenOpenContextImpl;
 import red.jackf.chesttracker.impl.rendering.NameRenderer;
 import red.jackf.chesttracker.impl.storage.ConnectionSettings;
 import red.jackf.chesttracker.impl.storage.Storage;
+import red.jackf.chesttracker.impl.storage.backend.JsonBackend;
+import red.jackf.chesttracker.impl.storage.backend.NbtBackend;
 import red.jackf.whereisit.client.api.events.ShouldIgnoreKey;
 
 import java.util.Optional;
+
+import static red.jackf.chesttracker.impl.storage.Storage.backend;
 
 public class ChestTracker implements ClientModInitializer {
     public static final String ID = "chesttracker";
@@ -74,6 +83,13 @@ public class ChestTracker implements ClientModInitializer {
     public void onInitializeClient() {
         ChestTrackerConfig.init();
         LOGGER.debug("Loading ChestTracker");
+        // Register darkmode resourcepack
+        ResourceManagerHelper.registerBuiltinResourcePack(
+                ResourceLocation.fromNamespaceAndPath("chesttracker", "darkmode_texture"),
+                FabricLoader.getInstance().getModContainer("chesttracker").orElseThrow(),
+                Component.literal("Chest Tracker (Unofficial port) - Dark Mode"),
+                ResourcePackActivationType.NORMAL
+        );
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             // opening Chest Tracker GUI with no screen open
@@ -149,6 +165,17 @@ public class ChestTracker implements ClientModInitializer {
                     });
                 else
                     LOGGER.debug("Blacklisted screen class, ignoring");
+            }
+        });
+
+        // Saving the data file before closing game
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            LOGGER.info("Server stopping, waiting for ChestTracker saves...");
+            if (backend instanceof NbtBackend nbtBackend) {
+                nbtBackend.waitForPendingSaves();
+            }
+            if (backend instanceof JsonBackend jsonBackend) {
+                jsonBackend.waitForPendingSaves();
             }
         });
 
