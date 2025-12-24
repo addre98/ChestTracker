@@ -27,6 +27,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class JsonBackend extends FileBasedBackend {
     private static final Logger LOGGER = LogManager.getLogger(ChestTracker.class.getCanonicalName() + "/JSON");
@@ -35,6 +38,9 @@ public class JsonBackend extends FileBasedBackend {
     public String extension() {
         return ".json";
     }
+
+    // Tracking active saves
+    private final Map<String, CompletableFuture<Boolean>> pendingSavesJson = new ConcurrentHashMap<>();
 
     @Nullable
     @Override
@@ -71,30 +77,83 @@ public class JsonBackend extends FileBasedBackend {
 
     @Override
     public boolean save(MemoryBankImpl memoryBank, @Nullable HolderLookup.Provider registries) {
-        LOGGER.debug("Saving {}", memoryBank.getId());
+        String id = memoryBank.getId();
+        LOGGER.debug("Saving async JSON {}", id);
 
-        DynamicOps<JsonElement> ops = registries == null ? JsonOps.INSTANCE : registries.createSerializationContext(JsonOps.INSTANCE);
+        // Taking snapshots of data before transferring it in an async stream (thread safety)
+        DynamicOps<JsonElement> ops = registries == null
+                ? JsonOps.INSTANCE
+                : registries.createSerializationContext(JsonOps.INSTANCE);
+        var metadataSnapshot = memoryBank.getMetadata().deepCopy();
+        var memoriesSnapshot = new HashMap<>(memoryBank.getMemories());
+        metadataSnapshot.updateModified();
 
-        memoryBank.getMetadata().updateModified();
-        boolean metaSaveSuccess = saveMetadata(memoryBank.getId(), memoryBank.getMetadata());
-        if (!metaSaveSuccess) return false;
+        Path path = Constants.STORAGE_DIR.resolve(id + extension());
 
-        Path path = Constants.STORAGE_DIR.resolve(memoryBank.getId() + extension());
-
-        try {
-            Files.createDirectories(path.getParent());
-            Optional<JsonElement> memoryJson = MemoryBankImpl.DATA_CODEC.encodeStart(ops, memoryBank.getMemories())
-                    .resultOrPartial(Util.prefix("Error encoding memories", LOGGER::error));
-            if (memoryJson.isPresent()) {
-                FileUtils.write(path.toFile(), FileUtil.gson().toJson(memoryJson.get()), StandardCharsets.UTF_8);
-                return true;
-            } else {
-                LOGGER.error("Unknown error encoding memories");
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error saving memories", ex);
+        // Cancel the previous save if it is still in progress.
+        CompletableFuture<Boolean> previous = pendingSavesJson.get(id);
+        if (previous != null && !previous.isDone()) {
+            LOGGER.debug("Previous save for {} still in progress, will be replaced", id);
         }
 
-        return false;
+        // Async saving
+        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+            try {
+                Files.createDirectories(path.getParent());
+                Optional<JsonElement> memoryJson = MemoryBankImpl.DATA_CODEC
+                        .encodeStart(ops, memoriesSnapshot)
+                        .resultOrPartial(Util.prefix("Error encoding memories", LOGGER::error));
+
+                if (memoryJson.isPresent()) {
+                    FileUtils.write(
+                            path.toFile(),
+                            FileUtil.gson().toJson(memoryJson.get()),
+                            StandardCharsets.UTF_8
+                    );
+                    LOGGER.debug("Async JSON save for {} succeeded", id);
+                    return true;
+                } else {
+                    LOGGER.error("Unknown error encoding memories for {}", id);
+                    return false;
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Error saving memories for {}", id, ex);
+                return false;
+            }
+        }, Util.backgroundExecutor()).exceptionally(ex -> {
+            LOGGER.error("Unhandled exception during async JSON save for {}", id, ex);
+            return false;
+        });
+
+        pendingSavesJson.put(id, future);
+        future.thenAccept(success -> {
+            pendingSavesJson.remove(id);
+            if (!success) {
+                LOGGER.warn("JSON save failed for {}, data may be incomplete", id);
+            }
+        });
+
+        return true;
+    }
+
+    // Waits for all active saves to complete if the game closes/the world
+    public void waitForPendingSaves() {
+        if (pendingSavesJson.isEmpty()) {
+            LOGGER.debug("No pending JSON saves to wait for");
+            return;
+        }
+        LOGGER.debug("Waiting for {} pending JSON save(s) to complete...", pendingSavesJson.size());
+
+        CompletableFuture<Void> allSaves = CompletableFuture.allOf(
+                pendingSavesJson.values().toArray(new CompletableFuture[0])
+        );
+
+        try {
+            // Waiting of 30 seconds in case of game freezing.
+            allSaves.get(30, TimeUnit.SECONDS);
+            LOGGER.debug("All pending JSON saves completed");
+        } catch (Exception ex) {
+            LOGGER.error("Error or timeout waiting for JSON saves to complete", ex);
+        }
     }
 }
