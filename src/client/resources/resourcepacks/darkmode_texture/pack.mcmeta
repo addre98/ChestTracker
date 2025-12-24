@@ -1,0 +1,9 @@
+{
+  "pack": {
+    "description": "Chest Tracker (Unofficial port) - Dark Mode Textures (from original mod)",
+    "pack_format": 15,
+    "min_format": [15, 0],
+        "max_format": [1000, 0],
+        "supported_formats": [15, 1000]
+  }
+}
