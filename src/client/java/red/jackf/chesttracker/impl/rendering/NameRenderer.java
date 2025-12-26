@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.BlockHitResult;
@@ -23,6 +22,7 @@ import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 import red.jackf.chesttracker.impl.memory.MemoryBankAccessImpl;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import red.jackf.whereisit.client.api.RenderUtils;
+import red.jackf.whereisit.client.render.WhereIsItPipelines;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -135,7 +135,7 @@ public class NameRenderer {
         float x = -width / 2f;
 
         // Background
-        VertexConsumer bgBuffer = consumers.getBuffer(RenderTypes.textBackgroundSeeThrough());
+        VertexConsumer bgBuffer = consumers.getBuffer(WhereIsItPipelines.TEXT_BACKGROUND_NO_DEPTH);
         int bgColour = ((int)(MC.options.getBackgroundOpacity(0.25F) * 255F)) << 24;
         bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
         bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
@@ -144,7 +144,7 @@ public class NameRenderer {
 
         // Text
         font.drawInBatch(label.text, x, 0, 0xFFFFFFFF, false, matrix, consumers,
-                Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
+                Font.DisplayMode.SEE_THROUGH, 0, LightTexture.FULL_BRIGHT);
 
         pose.popPose();
     }

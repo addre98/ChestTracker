@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,8 +38,8 @@ public class LevelRendererMixin {
 
         // Rendering the labels
         if (NameRenderer.hasScheduledLabels()) {
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthFunc(GL11.GL_ALWAYS);
+            //GL11.glDisable(GL11.GL_DEPTH_TEST);
+            //GL11.glDepthFunc(GL11.GL_ALWAYS);
 
             PoseStack poseStack = new PoseStack();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -48,8 +47,8 @@ public class LevelRendererMixin {
             NameRenderer.renderLabels(poseStack, cam, bufferSource);
             bufferSource.endBatch();
 
-            GL11.glDepthFunc(GL11.GL_LEQUAL);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            //GL11.glDepthFunc(GL11.GL_LEQUAL);
+            //GL11.glEnable(GL11.GL_DEPTH_TEST);
 
             NameRenderer.clearScheduledLabels();
         }
