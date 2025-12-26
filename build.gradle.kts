@@ -414,7 +414,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("where-is-it").forEach {
+                    listOf("where-is-it-port").forEach {
                         embeds {
                             slug.set(it)
                         }
