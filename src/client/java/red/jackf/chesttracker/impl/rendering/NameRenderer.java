@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import red.jackf.whereisit.client.render.WhereIsItPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.BlockHitResult;
@@ -22,6 +22,7 @@ import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 import red.jackf.chesttracker.impl.memory.MemoryBankAccessImpl;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import red.jackf.whereisit.client.api.RenderUtils;
+import com.mojang.math.Axis;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -102,8 +103,8 @@ public class NameRenderer {
 
         // Create PoseStack with camera rotation
         PoseStack pose = new PoseStack();
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(camera.getYRot() + 180f));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(camera.getYRot() + 180f));
 
         scheduledLabels.stream()
                 .sorted(Comparator.comparingDouble(label -> -camPos.distanceToSqr(label.position)))
@@ -122,8 +123,8 @@ public class NameRenderer {
         pose.translate(xOffset, yOffset, zOffset);
 
         // Additional rotation for billboard
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-camera.getYRot()));
-        pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.getXRot()));
+        pose.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
+        pose.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
 
         // Scale
         float scale = 0.025f;
@@ -135,7 +136,7 @@ public class NameRenderer {
         float x = -width / 2f;
 
         // Background
-        VertexConsumer bgBuffer = consumers.getBuffer(RenderType.textBackgroundSeeThrough());
+        VertexConsumer bgBuffer = consumers.getBuffer(WhereIsItPipelines.TEXT_BACKGROUND_NO_DEPTH);
         int bgColour = ((int)(MC.options.getBackgroundOpacity(0.25F) * 255F)) << 24;
         bgBuffer.addVertex(matrix, x - 1, -1f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
         bgBuffer.addVertex(matrix, x - 1, 10f, 0).setColor(bgColour).setLight(LightTexture.FULL_BRIGHT);
@@ -144,7 +145,7 @@ public class NameRenderer {
 
         // Text
         font.drawInBatch(label.text, x, 0, 0xFFFFFFFF, false, matrix, consumers,
-                Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
+                Font.DisplayMode.SEE_THROUGH, 0, LightTexture.FULL_BRIGHT);
 
         pose.popPose();
     }
