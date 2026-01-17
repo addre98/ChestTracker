@@ -1,6 +1,7 @@
 {
   "key.chesttracker.open_gui": "Відкрити інтерфейс",
   "chesttracker.title": "Chest Tracker",
+  "key.category.chesttracker.title": "Chest Tracker",
   "chesttracker.compatibility.brand": "Перегляд на стороні клієнта через %s",
   "chesttracker.compatibility.litematica.search": "Пошук",
   "chesttracker.compatibility.litematica.searchMissing": "Пошук відсутній",

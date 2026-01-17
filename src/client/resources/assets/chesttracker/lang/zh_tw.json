@@ -1,6 +1,7 @@
 {
   "key.chesttracker.open_gui": "開啟儲物箱追蹤器介面",
   "chesttracker.title": "儲物箱追蹤器",
+  "key.category.chesttracker.title": "儲物箱追蹤器",
   "chesttracker.compatibility.brand": "透過 %s 的用戶端預覽",
   "chesttracker.compatibility.litematica.search": "搜尋",
   "chesttracker.compatibility.litematica.searchMissing": "搜尋遺漏",

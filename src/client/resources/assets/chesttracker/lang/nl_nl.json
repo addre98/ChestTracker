@@ -1,6 +1,7 @@
 {
   "key.chesttracker.open_gui": "Open Item Zoeker",
   "chesttracker.title": "Item Zoeker",
+  "key.category.chesttracker.title": "Item Zoeker",
   "chesttracker.compatibility.brand": "Client-side voorbeeld via %s",
   "chesttracker.compatibility.litematica.search": "Search",
   "chesttracker.compatibility.litematica.searchMissing": "Search Missing",

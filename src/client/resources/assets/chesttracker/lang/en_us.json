@@ -2,6 +2,7 @@
   "key.chesttracker.open_gui": "Open Chest Tracker GUI",
 
   "chesttracker.title": "Chest Tracker",
+  "key.category.chesttracker.title": "Chest Tracker",
   "chesttracker.compatibility.brand": "Client-side preview via %s",
   "chesttracker.compatibility.litematica.search": "Search",
   "chesttracker.compatibility.litematica.searchMissing": "Search Missing",

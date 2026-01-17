@@ -1,6 +1,7 @@
 {
   "key.chesttracker.open_gui": "Abrir Menu do Chest Tracker",
   "chesttracker.title": "Chest Tracker",
+  "key.category.chesttracker.title": "Chest Tracker",
   "chesttracker.compatibility.brand": "Pré-visualização do lado do cliente via %s",
   "chesttracker.compatibility.litematica.search": "Buscar",
   "chesttracker.compatibility.litematica.searchMissing": "Busca Ausente",

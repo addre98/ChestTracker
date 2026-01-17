@@ -62,7 +62,7 @@ public class ChestTracker implements ClientModInitializer {
         return LogManager.getLogger(ChestTracker.class.getCanonicalName() + "/" + suffix);
     }
     public static final KeyMapping.Category CHESTTRACKER_CATEGORY =
-            new KeyMapping.Category(Identifier.tryParse("chesttracker:title"));
+            new KeyMapping.Category(Identifier.fromNamespaceAndPath("chesttracker", "title"));
     public static final KeyMapping OPEN_GUI = KeyBindingHelper.registerKeyBinding(
             new KeyMapping("key.chesttracker.open_gui", InputConstants.Type.KEYSYM, InputConstants.KEY_GRAVE, CHESTTRACKER_CATEGORY)
     );
