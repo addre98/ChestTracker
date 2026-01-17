@@ -24,7 +24,9 @@ public abstract class SteppedSlider<T> extends AbstractSliderButton {
     }
 
     public T getSelected() {
-        return options.get(Mth.floor(Mth.clampedLerp(0, options.size() - 1, this.value)));
+        int maxIndex = options.size() - 1;
+        int index = Mth.floor(this.value * maxIndex + 0.5);
+        return options.get(Mth.clamp(index, 0, maxIndex));
     }
 
     @Override
