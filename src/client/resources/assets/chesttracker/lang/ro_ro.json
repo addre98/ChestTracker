@@ -171,6 +171,8 @@
   "chesttracker.config.storage.storageBackend.description.nbt": "Stochează toate Băncile de Memorie ca fișiere NBT în directorul 'chesttracker' al jocului tău. Mai compacte, dar nu lizibile fără un vizualizator extern. Opțiune recomandată.",
   "chesttracker.config.storage.storageBackend.description.memory": "Stochează Băncile de Memorie în memoria jocului.",
   "chesttracker.config.storage.storageBackend.description.memoryLossOnReboot": "Atenție: toate Băncile de Memorie stocate în acest mod sunt pierdute când jocul se închide.",
+  "chesttracker.config.storage.asyncSaving": "Async saving memory file",
+  "chesttracker.config.storage.asyncSaving.description": "Asynchronous memory file saving (unstable but does not cause freezes), or synchronous (causes freezes but works stably)",
   "chesttracker.config.storage.json.readableJsonMemories": "Fișiere JSON Lizibile",
   "chesttracker.config.storage.json.readableJsonMemories.description": "Dacă fișierele JSON din directorul de memorie ar trebui să fie lizibile sau compactate.",
   "chesttracker.config.compatibility.shulkerboxtooltip": "Integrarea Shulker Box Tooltip",

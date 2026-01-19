@@ -10,6 +10,7 @@ import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import red.jackf.chesttracker.impl.util.Constants;
 import red.jackf.chesttracker.impl.util.FileUtil;
 import red.jackf.chesttracker.impl.util.Misc;
+import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,62 +40,68 @@ public class NbtBackend extends FileBasedBackend {
 
     @Override
     public boolean save(MemoryBankImpl memoryBank, @Nullable HolderLookup.Provider registries) {
-        String id = memoryBank.getId();
-        int entriesCount = memoryBank.getMemories().size();
+        if (ChestTrackerConfig.INSTANCE.instance().storage.AsyncSaving) {
+            String id = memoryBank.getId();
+            int entriesCount = memoryBank.getMemories().size();
 
-        // Taking snapshots of data before transferring it in an async stream (thread safety)
-        var metadataSnapshot = memoryBank.getMetadata().deepCopy();
-        var memoriesSnapshot = new HashMap<>(memoryBank.getMemories());
-        metadataSnapshot.updateModified();
-        LOGGER.debug("Created snapshot for {} ({} entries)", id, entriesCount);
+            // Taking snapshots of data before transferring it in an async stream (thread safety)
+            var metadataSnapshot = memoryBank.getMetadata().deepCopy();
+            var memoriesSnapshot = new HashMap<>(memoryBank.getMemories());
+            metadataSnapshot.updateModified();
+            LOGGER.debug("Created snapshot for {} ({} entries)", id, entriesCount);
 
-        // Cancel the previous save if it is still in progress.
-        CompletableFuture<Boolean> previous = pendingSavesNbt.get(id);
-        if (previous != null && !previous.isDone()) {
-            LOGGER.debug("Previous save for {} still in progress, will be replaced", id);
-        }
+            // Cancel the previous save if it is still in progress.
+            CompletableFuture<Boolean> previous = pendingSavesNbt.get(id);
+            if (previous != null && !previous.isDone()) {
+                LOGGER.debug("Previous save for {} still in progress, will be replaced", id);
+            }
 
-        // Async saving
-        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
-            LOGGER.debug("Starting async save for {}", id);
+            // Async saving
+            CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+                LOGGER.debug("Starting async save for {}", id);
 
-            // Save metadata
-            if (!saveMetadata(id, metadataSnapshot)) {
-                LOGGER.error("Failed to save metadata for {}", id);
+                // Save metadata
+                if (!saveMetadata(id, metadataSnapshot)) {
+                    LOGGER.error("Failed to save metadata for {}", id);
+                    return false;
+                }
+
+                // Save .nbt data
+                boolean result = FileUtil.saveToNbt(
+                        memoriesSnapshot,
+                        MemoryBankImpl.DATA_CODEC,
+                        Constants.STORAGE_DIR.resolve(id + extension()),
+                        registries
+                );
+                if (result) {
+                    LOGGER.debug("Successfully saved {} ({} entries)",
+                            id, entriesCount);
+                } else {
+                    LOGGER.error("Failed to save NBT data for {}", id);
+                }
+                return result;
+            }, Util.backgroundExecutor()).exceptionally(ex -> {
+                LOGGER.error("Exception during async save for {}", id, ex);
                 return false;
-            }
+            });
 
-            // Save .nbt data
-            boolean result = FileUtil.saveToNbt(
-                    memoriesSnapshot,
-                    MemoryBankImpl.DATA_CODEC,
-                    Constants.STORAGE_DIR.resolve(id + extension()),
-                    registries
-            );
-            if (result) {
-                LOGGER.debug("Successfully saved {} ({} entries)",
-                        id, entriesCount);
-            } else {
-                LOGGER.error("Failed to save NBT data for {}", id);
-            }
-            return result;
-        }, Util.backgroundExecutor()).exceptionally(ex -> {
-            LOGGER.error("Exception during async save for {}", id, ex);
-            return false;
-        });
+            // Save the future for tracking
+            pendingSavesNbt.put(id, future);
 
-        // Save the future for tracking
-        pendingSavesNbt.put(id, future);
-
-        // Remove from the map after completion
-        future.thenAccept(success -> {
-            pendingSavesNbt.remove(id);
-            if (!success) {
-                LOGGER.warn("Save failed for {}, data may be incomplete", id);
-            }
-        });
-
-        return true; // Returning the launch success, not the save result
+            // Remove from the map after completion
+            future.thenAccept(success -> {
+                pendingSavesNbt.remove(id);
+                if (!success) {
+                    LOGGER.warn("Save failed for {}, data may be incomplete", id);
+                }
+            });
+            return true;
+        } else {
+            LOGGER.debug("Saving {}", memoryBank.getId());
+            memoryBank.getMetadata().updateModified();
+            if (!saveMetadata(memoryBank.getId(), memoryBank.getMetadata())) return false;
+            return FileUtil.saveToNbt(memoryBank.getMemories(), MemoryBankImpl.DATA_CODEC, Constants.STORAGE_DIR.resolve(memoryBank.getId() + extension()), registries);
+        }
     }
 
     // Waits for all active saves to complete if the game closes/the world is exited

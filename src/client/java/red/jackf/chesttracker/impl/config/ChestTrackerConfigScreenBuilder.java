@@ -409,6 +409,19 @@ public class ChestTrackerConfigScreenBuilder {
                                 })
                         .build())
                 .option(Option.<Boolean>createBuilder()
+                        .name(translatable("chesttracker.config.storage.asyncSaving"))
+                        .description(OptionDescription.createBuilder()
+                                .text(translatable("chesttracker.config.storage.asyncSaving.description"))
+                                .build())
+                        .controller(opt -> BooleanControllerBuilder.create(opt)
+                                .yesNoFormatter()
+                                .coloured(true))
+                        .binding(
+                                instance.defaults().storage.AsyncSaving,
+                                () -> instance.instance().storage.AsyncSaving,
+                                b -> instance.instance().storage.AsyncSaving = b)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
                         .name(translatable("chesttracker.config.storage.json.readableJsonMemories"))
                         .description(b -> OptionDescription.createBuilder()
                                 .text(translatable("chesttracker.config.storage.json.readableJsonMemories.description"))

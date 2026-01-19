@@ -171,6 +171,8 @@
   "chesttracker.config.storage.storageBackend.description.nbt": "Almacena todos los bancos de memoria como archivos NBT en el directorio 'chesttracker' del juego. Más compacto, pero no se puede leer sin un visor externo. Opción recomendada.",
   "chesttracker.config.storage.storageBackend.description.memory": "Almacena bancos de memoria en la memoria del juego.",
   "chesttracker.config.storage.storageBackend.description.memoryLossOnReboot": "Aviso: todos los bancos de memoria almacenados de esta manera se pierden cuando el juego se cierra.",
+  "chesttracker.config.storage.asyncSaving": "Async saving memory file",
+  "chesttracker.config.storage.asyncSaving.description": "Asynchronous memory file saving (unstable but does not cause freezes), or synchronous (causes freezes but works stably)",
   "chesttracker.config.storage.json.readableJsonMemories": "Archivos JSON legibles",
   "chesttracker.config.storage.json.readableJsonMemories.description": "Si los archivos JSON en el directorio de memoria deben ser legibles, o compactos.",
   "chesttracker.config.compatibility.shulkerboxtooltip": "Integración con Shulker Box Tooltip",

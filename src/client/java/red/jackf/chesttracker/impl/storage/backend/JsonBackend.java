@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import red.jackf.chesttracker.impl.ChestTracker;
+import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import red.jackf.chesttracker.impl.memory.MemoryKeyImpl;
 import red.jackf.chesttracker.impl.memory.metadata.Metadata;
@@ -77,63 +78,91 @@ public class JsonBackend extends FileBasedBackend {
 
     @Override
     public boolean save(MemoryBankImpl memoryBank, @Nullable HolderLookup.Provider registries) {
-        String id = memoryBank.getId();
-        LOGGER.debug("Saving async JSON {}", id);
+        if (ChestTrackerConfig.INSTANCE.instance().storage.AsyncSaving) {
+            String id = memoryBank.getId();
+            LOGGER.debug("Saving async JSON {}", id);
 
-        // Taking snapshots of data before transferring it in an async stream (thread safety)
-        DynamicOps<JsonElement> ops = registries == null
-                ? JsonOps.INSTANCE
-                : registries.createSerializationContext(JsonOps.INSTANCE);
-        var metadataSnapshot = memoryBank.getMetadata().deepCopy();
-        var memoriesSnapshot = new HashMap<>(memoryBank.getMemories());
-        metadataSnapshot.updateModified();
+            // Taking snapshots of data before transferring it in an async stream (thread safety)
+            DynamicOps<JsonElement> ops = registries == null
+                    ? JsonOps.INSTANCE
+                    : registries.createSerializationContext(JsonOps.INSTANCE);
+            var metadataSnapshot = memoryBank.getMetadata().deepCopy();
+            var memoriesSnapshot = new HashMap<>(memoryBank.getMemories());
+            metadataSnapshot.updateModified();
 
-        Path path = Constants.STORAGE_DIR.resolve(id + extension());
+            Path path = Constants.STORAGE_DIR.resolve(id + extension());
 
-        // Cancel the previous save if it is still in progress.
-        CompletableFuture<Boolean> previous = pendingSavesJson.get(id);
-        if (previous != null && !previous.isDone()) {
-            LOGGER.debug("Previous save for {} still in progress, will be replaced", id);
-        }
+            // Cancel the previous save if it is still in progress.
+            CompletableFuture<Boolean> previous = pendingSavesJson.get(id);
+            if (previous != null && !previous.isDone()) {
+                LOGGER.debug("Previous save for {} still in progress, will be replaced", id);
+            }
 
-        // Async saving
-        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
-            try {
-                Files.createDirectories(path.getParent());
-                Optional<JsonElement> memoryJson = MemoryBankImpl.DATA_CODEC
-                        .encodeStart(ops, memoriesSnapshot)
-                        .resultOrPartial(Util.prefix("Error encoding memories", LOGGER::error));
+            // Async saving
+            CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    Files.createDirectories(path.getParent());
+                    Optional<JsonElement> memoryJson = MemoryBankImpl.DATA_CODEC
+                            .encodeStart(ops, memoriesSnapshot)
+                            .resultOrPartial(Util.prefix("Error encoding memories", LOGGER::error));
 
-                if (memoryJson.isPresent()) {
-                    FileUtils.write(
-                            path.toFile(),
-                            FileUtil.gson().toJson(memoryJson.get()),
-                            StandardCharsets.UTF_8
-                    );
-                    LOGGER.debug("Async JSON save for {} succeeded", id);
-                    return true;
-                } else {
-                    LOGGER.error("Unknown error encoding memories for {}", id);
+                    if (memoryJson.isPresent()) {
+                        FileUtils.write(
+                                path.toFile(),
+                                FileUtil.gson().toJson(memoryJson.get()),
+                                StandardCharsets.UTF_8
+                        );
+                        LOGGER.debug("Async JSON save for {} succeeded", id);
+                        return true;
+                    } else {
+                        LOGGER.error("Unknown error encoding memories for {}", id);
+                        return false;
+                    }
+                } catch (IOException ex) {
+                    LOGGER.error("Error saving memories for {}", id, ex);
                     return false;
                 }
-            } catch (IOException ex) {
-                LOGGER.error("Error saving memories for {}", id, ex);
+            }, Util.backgroundExecutor()).exceptionally(ex -> {
+                LOGGER.error("Unhandled exception during async JSON save for {}", id, ex);
                 return false;
+            });
+
+            pendingSavesJson.put(id, future);
+            future.thenAccept(success -> {
+                pendingSavesJson.remove(id);
+                if (!success) {
+                    LOGGER.warn("JSON save failed for {}, data may be incomplete", id);
+                }
+            });
+
+            return true;
+        } else {
+            LOGGER.debug("Saving {}", memoryBank.getId());
+
+            DynamicOps<JsonElement> ops = registries == null ? JsonOps.INSTANCE : registries.createSerializationContext(JsonOps.INSTANCE);
+
+            memoryBank.getMetadata().updateModified();
+            boolean metaSaveSuccess = saveMetadata(memoryBank.getId(), memoryBank.getMetadata());
+            if (!metaSaveSuccess) return false;
+
+            Path path = Constants.STORAGE_DIR.resolve(memoryBank.getId() + extension());
+
+            try {
+                Files.createDirectories(path.getParent());
+                Optional<JsonElement> memoryJson = MemoryBankImpl.DATA_CODEC.encodeStart(ops, memoryBank.getMemories())
+                        .resultOrPartial(Util.prefix("Error encoding memories", LOGGER::error));
+                if (memoryJson.isPresent()) {
+                    FileUtils.write(path.toFile(), FileUtil.gson().toJson(memoryJson.get()), StandardCharsets.UTF_8);
+                    return true;
+                } else {
+                    LOGGER.error("Unknown error encoding memories");
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Error saving memories", ex);
             }
-        }, Util.backgroundExecutor()).exceptionally(ex -> {
-            LOGGER.error("Unhandled exception during async JSON save for {}", id, ex);
+
             return false;
-        });
-
-        pendingSavesJson.put(id, future);
-        future.thenAccept(success -> {
-            pendingSavesJson.remove(id);
-            if (!success) {
-                LOGGER.warn("JSON save failed for {}, data may be incomplete", id);
-            }
-        });
-
-        return true;
+        }
     }
 
     // Waits for all active saves to complete if the game closes/the world
