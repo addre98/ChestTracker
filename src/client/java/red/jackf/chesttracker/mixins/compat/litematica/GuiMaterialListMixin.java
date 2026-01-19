@@ -43,7 +43,7 @@ public abstract class GuiMaterialListMixin extends GuiListBase<MaterialListEntry
     private void addSearchAllButton(CallbackInfo ci, @Local(ordinal = 0) int x, @Local(ordinal = 1) int y) {
         if (!ChestTrackerConfig.INSTANCE.instance().compatibility.litematica.materialListSearchButtons) return;
 
-        x += StringUtils.getStringWidth(StringUtils.translate("litematica.gui.button.material_list.write_to_file")) + 10 + 1;
+        x += StringUtils.getStringWidth(StringUtils.translate("litematica.gui.button.material_list.raw_materials")) + 10 + 1;
 
         ButtonGeneric searchButton = new ButtonGeneric(x, y, -1, 20,
                 StringUtils.translate("chesttracker.compatibility.litematica.searchMissing"),
