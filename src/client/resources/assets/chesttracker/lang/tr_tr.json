@@ -1,6 +1,7 @@
 {
   "key.chesttracker.open_gui": "Chest Tracker GUI'yi Aç",
   "chesttracker.title": "Chest Tracker",
+  "key.category.chesttracker.title": "Chest Tracker",
   "chesttracker.compatibility.brand": "Client-side önizleme: %s",
   "chesttracker.compatibility.litematica.search": "Arama",
   "chesttracker.compatibility.litematica.searchMissing": "Arama Bulunamadı",
@@ -170,6 +171,8 @@
   "chesttracker.config.storage.storageBackend.description.nbt": "Tüm Hafıza Bankalarını oyunun 'chesttracker' dizinine NBT dosyaları olarak kaydeder. Daha kompakt, ancak harici bir görüntüleyici olmadan okunamaz. Tavsiye edilen seçenek.",
   "chesttracker.config.storage.storageBackend.description.memory": "Hafıza Bankalarını oyun hafızasında saklar.",
   "chesttracker.config.storage.storageBackend.description.memoryLossOnReboot": "Uyarı: Bu şekilde depolanan tüm Hafıza Bankaları oyun kapatıldığında kaybolur.",
+  "chesttracker.config.storage.asyncSaving": "Async saving memory file",
+  "chesttracker.config.storage.asyncSaving.description": "Asynchronous memory file saving (unstable but does not cause freezes), or synchronous (causes freezes but works stably)",
   "chesttracker.config.storage.json.readableJsonMemories": "Okunabilir JSON Dosyaları",
   "chesttracker.config.storage.json.readableJsonMemories.description": "Hafıza dizinindeki JSON dosyalarının okunabilir olup olmadığı, veya sıkıştırılmış olup olmadığı.",
   "chesttracker.config.compatibility.shulkerboxtooltip": "Shulker Box Tooltip Entegrasyonu",
