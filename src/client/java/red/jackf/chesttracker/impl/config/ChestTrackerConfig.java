@@ -110,6 +110,9 @@ public class ChestTrackerConfig {
     }
 
     public static class Storage {
+        @SerialEntry(comment = "Asynchronous file saving (unstable), or synchronous (causes freezes but works stably)")
+        public boolean AsyncSaving = false;
+
         @SerialEntry(comment = "Whether the JSON files in the memory directory should be readable, or compacted.")
         public boolean readableJsonMemories = false;
 

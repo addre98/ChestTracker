@@ -123,8 +123,8 @@ public class ChestTrackerConfigScreenBuilder {
                         .name(translatable("chesttracker.config.gui.showAutocomplete"))
                         .description(b -> {
                             var desc = OptionDescription.createBuilder()
-                                             .image(getDescriptionImage("show_autocomplete", b), 85, 59)
-                                             .text(translatable("chesttracker.config.searchables.required"));
+                                    .image(getDescriptionImage("show_autocomplete", b), 85, 59)
+                                    .text(translatable("chesttracker.config.searchables.required"));
 
                             if (!Compatibility.SEARCHABLES) desc.text(translatable("chesttracker.config.searchables.notInstalled").withStyle(ChatFormatting.RED));
 
@@ -143,8 +143,8 @@ public class ChestTrackerConfigScreenBuilder {
                         .name(translatable("chesttracker.config.gui.autocompleteShowsRegularNames"))
                         .description(b -> {
                             var desc = OptionDescription.createBuilder()
-                                             .image(getDescriptionImage("show_unnamed_in_autocomplete", b), 118, 85)
-                                             .text(translatable("chesttracker.config.searchables.required"));
+                                    .image(getDescriptionImage("show_unnamed_in_autocomplete", b), 118, 85)
+                                    .text(translatable("chesttracker.config.searchables.required"));
 
                             if (!Compatibility.SEARCHABLES) desc.text(translatable("chesttracker.config.searchables.notInstalled").withStyle(ChatFormatting.RED));
 
@@ -201,29 +201,29 @@ public class ChestTrackerConfigScreenBuilder {
                                 i -> instance.instance().gui.gridHeight = i).
                         build())
                 .option(Option.<Boolean>createBuilder()
-                                .name(translatable("chesttracker.config.gui.hideMemoryBankIds"))
-                                .description(b -> OptionDescription.createBuilder()
-                                        .image(getDescriptionImage("hide_memory_bank_ids", b), 143, 81)
-                                        .text(translatable("chesttracker.config.gui.hideMemoryBankIds.description"))
-                                        .build())
-                                .controller(opt -> BooleanControllerBuilder.create(opt)
-                                        .yesNoFormatter()
-                                        .coloured(true))
-                                .binding(
-                                        instance.defaults().gui.hideMemoryIds,
-                                        () -> instance.instance().gui.hideMemoryIds,
-                                        b -> instance.instance().gui.hideMemoryIds = b)
+                        .name(translatable("chesttracker.config.gui.hideMemoryBankIds"))
+                        .description(b -> OptionDescription.createBuilder()
+                                .image(getDescriptionImage("hide_memory_bank_ids", b), 143, 81)
+                                .text(translatable("chesttracker.config.gui.hideMemoryBankIds.description"))
                                 .build())
+                        .controller(opt -> BooleanControllerBuilder.create(opt)
+                                .yesNoFormatter()
+                                .coloured(true))
+                        .binding(
+                                instance.defaults().gui.hideMemoryIds,
+                                () -> instance.instance().gui.hideMemoryIds,
+                                b -> instance.instance().gui.hideMemoryIds = b)
+                        .build())
                 .option(Option.<Integer>createBuilder()
-                                .name(translatable("chesttracker.config.gui.itemListTextScale"))
-                                .description(OptionDescription.of(translatable("chesttracker.config.gui.itemListTextScale.description")))
-                                .controller(opt -> IntegerSliderControllerBuilder.create(opt)
-                                        .range(-6, 0)
-                                        .step(1))
-                                .binding(instance.defaults().gui.itemListTextScale,
-                                         () -> instance.instance().gui.itemListTextScale,
-                                         i -> instance.instance().gui.itemListTextScale = i)
-                                .build())
+                        .name(translatable("chesttracker.config.gui.itemListTextScale"))
+                        .description(OptionDescription.of(translatable("chesttracker.config.gui.itemListTextScale.description")))
+                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                .range(-6, 0)
+                                .step(1))
+                        .binding(instance.defaults().gui.itemListTextScale,
+                                () -> instance.instance().gui.itemListTextScale,
+                                i -> instance.instance().gui.itemListTextScale = i)
+                        .build())
                 .option(Option.<Boolean>createBuilder()
                         .name(translatable("chesttracker.config.gui.useCustomNamesInGUIs"))
                         .description(b -> OptionDescription.createBuilder()
@@ -409,6 +409,19 @@ public class ChestTrackerConfigScreenBuilder {
                                 })
                         .build())
                 .option(Option.<Boolean>createBuilder()
+                        .name(translatable("chesttracker.config.storage.asyncSaving"))
+                        .description(OptionDescription.createBuilder()
+                                .text(translatable("chesttracker.config.storage.asyncSaving.description"))
+                                .build())
+                        .controller(opt -> BooleanControllerBuilder.create(opt)
+                                .yesNoFormatter()
+                                .coloured(true))
+                        .binding(
+                                instance.defaults().storage.AsyncSaving,
+                                () -> instance.instance().storage.AsyncSaving,
+                                b -> instance.instance().storage.AsyncSaving = b)
+                        .build())
+                .option(Option.<Boolean>createBuilder()
                         .name(translatable("chesttracker.config.storage.json.readableJsonMemories"))
                         .description(b -> OptionDescription.createBuilder()
                                 .text(translatable("chesttracker.config.storage.json.readableJsonMemories.description"))
@@ -437,36 +450,36 @@ public class ChestTrackerConfigScreenBuilder {
         return ConfigCategory.createBuilder()
                 .name(translatable("whereisit.config.compatibility"))
                 .option(Option.<Boolean>createBuilder()
-                                .name(translatable("chesttracker.config.compatibility.shulkerboxtooltip"))
-                                .description(OptionDescription.of(
-                                        translatable("chesttracker.config.compatibility.shulkerboxtooltip.description"),
-                                        CommonComponents.EMPTY,
-                                        requiresRestart()
-                                ))
-                                .flag(OptionFlag.GAME_RESTART)
-                                .controller(opt -> BooleanControllerBuilder.create(opt)
-                                        .onOffFormatter()
-                                        .coloured(true))
-                                .binding(
-                                        instance.defaults().compatibility.shulkerBoxTooltipIntegration,
-                                        () -> instance.instance().compatibility.shulkerBoxTooltipIntegration,
-                                        b -> instance.instance().compatibility.shulkerBoxTooltipIntegration = b
-                                )
-                                .build())
+                        .name(translatable("chesttracker.config.compatibility.shulkerboxtooltip"))
+                        .description(OptionDescription.of(
+                                translatable("chesttracker.config.compatibility.shulkerboxtooltip.description"),
+                                CommonComponents.EMPTY,
+                                requiresRestart()
+                        ))
+                        .flag(OptionFlag.GAME_RESTART)
+                        .controller(opt -> BooleanControllerBuilder.create(opt)
+                                .onOffFormatter()
+                                .coloured(true))
+                        .binding(
+                                instance.defaults().compatibility.shulkerBoxTooltipIntegration,
+                                () -> instance.instance().compatibility.shulkerBoxTooltipIntegration,
+                                b -> instance.instance().compatibility.shulkerBoxTooltipIntegration = b
+                        )
+                        .build())
                 .option(Option.<Boolean>createBuilder()
-                                .name(translatable("chesttracker.config.compatibility.wthit"))
-                                .description(OptionDescription.of(
-                                        translatable("chesttracker.config.compatibility.wthit.description")
-                                ))
-                                .controller(opt -> BooleanControllerBuilder.create(opt)
-                                        .onOffFormatter()
-                                        .coloured(true))
-                                .binding(
-                                        instance.defaults().compatibility.wthitIntegration,
-                                        () -> instance.instance().compatibility.wthitIntegration,
-                                        b -> instance.instance().compatibility.wthitIntegration = b
-                                )
-                                .build())
+                        .name(translatable("chesttracker.config.compatibility.wthit"))
+                        .description(OptionDescription.of(
+                                translatable("chesttracker.config.compatibility.wthit.description")
+                        ))
+                        .controller(opt -> BooleanControllerBuilder.create(opt)
+                                .onOffFormatter()
+                                .coloured(true))
+                        .binding(
+                                instance.defaults().compatibility.wthitIntegration,
+                                () -> instance.instance().compatibility.wthitIntegration,
+                                b -> instance.instance().compatibility.wthitIntegration = b
+                        )
+                        .build())
                 .group(OptionGroup.createBuilder()
                         .name(translatable("chesttracker.config.compatibility.litematica"))
                         .option(Option.<Boolean>createBuilder()
