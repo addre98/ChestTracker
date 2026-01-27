@@ -1,6 +1,6 @@
 # Chest Tracker (Unofficial port)
 ---
-## [Original Mod](https://github.com/JackFred2/ChestTracker)
+## **Unofficial port** for new versions Minecraft, as the original author hasn't updated the mod for a long time. [Original Mod](https://modrinth.com/mod/chest-tracker).
 ---
 A client-sided storage system. Press **Y** to search for items, and the **GRAVE** key ``` ` ``` to open the GUI.
 
