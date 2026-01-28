@@ -118,12 +118,28 @@ public class ItemListWidget extends AbstractWidget {
         var items = getOffsetItems();
         for (int i = 0; i < items.size(); i++) {
             ItemStack item = items.get(i);
+            int offset = -GuiConstants.GRID_SLOT_SIZE + 2;
 
-            int slotX = this.getX() + GuiConstants.GRID_SLOT_SIZE * (i % gridWidth);
-            int slotY = this.getY() + GuiConstants.GRID_SLOT_SIZE * (i / gridWidth);
+            // move to correct slot on screen
+            graphics.pose().pushMatrix();
+            int bottomRightX = this.getX() + GuiConstants.GRID_SLOT_SIZE * ((i % gridWidth) + 1);
+            int bottomRightY = this.getY() + GuiConstants.GRID_SLOT_SIZE * ((i / gridWidth) + 1);
+            graphics.pose().translate(bottomRightX - 1, bottomRightY - 1);
 
-            String text = item.getCount() > 1 ? Strings.magnitude(item.getCount(), 0) : null;
-            graphics.renderItemDecorations(Minecraft.getInstance().font, item, slotX + 1, slotY + 1, text);
+            // durability, scaled normally
+            graphics.renderItemDecorations(Minecraft.getInstance().font, item, offset, offset, "");
+
+            // scale down for text
+            Pair<Integer, Integer> scales = getScales();
+            int textScale = scales.getFirst();
+            int guiScale = scales.getSecond();
+            float scaleFactor = (float) textScale / guiScale;
+            graphics.pose().scale(scaleFactor, scaleFactor);
+
+            // render count text scaled down
+            String text = Strings.magnitude(item.getCount(), 0);
+            graphics.renderItemDecorations(Minecraft.getInstance().font, DUMMY_ITEM_FOR_COUNT, offset, offset, text);
+            graphics.pose().popMatrix();
         }
     }
 
