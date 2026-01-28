@@ -23,6 +23,7 @@ import red.jackf.chesttracker.impl.memory.MemoryBankAccessImpl;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import red.jackf.whereisit.client.api.RenderUtils;
 import com.mojang.math.Axis;
+import red.jackf.whereisit.config.WhereIsItConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -127,7 +128,7 @@ public class NameRenderer {
         pose.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
 
         // Scale
-        float scale = 0.025f;
+        float scale = 0.025f * WhereIsItConfig.INSTANCE.instance().getClient().containerNameLabelScale;
         pose.scale(-scale, -scale, scale);
 
         Matrix4f matrix = pose.last().pose();
