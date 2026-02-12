@@ -118,7 +118,7 @@ public class NameRenderer {
 
         // Offset from the camera
         final double xOffset = label.position.x - camPos.x;
-        final double yOffset = label.position.y - camPos.y;
+        final double yOffset = label.position.y + WhereIsItConfig.INSTANCE.instance().getClient().Ypositiontext - camPos.y;
         final double zOffset = label.position.z - camPos.z;
         pose.translate(xOffset, yOffset, zOffset);
 
