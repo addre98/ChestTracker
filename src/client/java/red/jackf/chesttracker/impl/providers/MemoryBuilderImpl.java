@@ -19,6 +19,8 @@ public class MemoryBuilderImpl implements MemoryBuilder {
     private @Nullable Component name;
     private List<BlockPos> otherPositions = Collections.emptyList();
     private Block container;
+    private @Nullable Integer entityId;
+    private @Nullable java.util.UUID entityUuid;
 
     public MemoryBuilderImpl(List<ItemStack> items) {
         this.items = items;
@@ -35,6 +37,18 @@ public class MemoryBuilderImpl implements MemoryBuilder {
         return this;
     }
 
+    @Override
+    public MemoryBuilder withEntityId(@Nullable Integer entityId) {
+        this.entityId = entityId;
+        return this;
+    }
+
+    @Override
+    public MemoryBuilder withEntityUuid(@Nullable java.util.UUID entityUuid) {
+        this.entityUuid = entityUuid;
+        return this;
+    }
+
     public MemoryBuilderImpl otherPositions(List<BlockPos> otherPositions) {
         this.otherPositions = otherPositions;
         return this;
@@ -47,6 +61,6 @@ public class MemoryBuilderImpl implements MemoryBuilder {
 
     @Override
     public Memory build() {
-        return new Memory(items, name, otherPositions, Optional.ofNullable(container), Memory.UNKNOWN_LOADED_TIMESTAMP, Memory.UNKNOWN_WORLD_TIMESTAMP, Memory.UNKNOWN_REAL_TIMESTAMP);
+        return new Memory(items, name, otherPositions, Optional.ofNullable(container), Memory.UNKNOWN_LOADED_TIMESTAMP, Memory.UNKNOWN_WORLD_TIMESTAMP, Memory.UNKNOWN_REAL_TIMESTAMP, entityId, entityUuid);
     }
 }

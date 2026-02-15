@@ -171,6 +171,8 @@
   "chesttracker.config.storage.storageBackend.description.nbt": "Stores all Memory Banks as NBT files in your game's 'chesttracker' directory. More compact, but not readable without an external viewer. Recommended option.",
   "chesttracker.config.storage.storageBackend.description.memory": "Stores Memory Banks in game memory.",
   "chesttracker.config.storage.storageBackend.description.memoryLossOnReboot": "Warning: all Memory Banks stored this way are lost when the game closes.",
+  "chesttracker.config.storage.entityMemories": "Entity storage saving",
+  "chesttracker.config.storage.entityMemories.description": "Store and search memories in container entities (chest boats, minecarts, etc.)",
   "chesttracker.config.storage.asyncSaving": "Async saving memory file",
   "chesttracker.config.storage.asyncSaving.description": "Asynchronous memory file saving (unstable but does not cause freezes), or synchronous (causes freezes but works stably)",
   "chesttracker.config.storage.json.readableJsonMemories": "Lesbare JSON-Dateien",
@@ -187,5 +189,6 @@
   "chesttracker.config.compatibility.litematica.countNearbyMaterials.description1": "Ob Materialien in nahegelegenen Behältern zu Litematicas Materialberechnungen hinzugefügt werden sollen.",
   "chesttracker.config.compatibility.litematica.countNearbyMaterials.description2": "Die Reichweite beträgt 48 Blöcke vom Spieler.",
   "chesttracker.config.searchables.required": "Requires Searchables.",
-  "chesttracker.config.searchables.notInstalled": "Searchables not loaded."
+  "chesttracker.config.searchables.notInstalled": "Searchables not loaded.",
+  "chesttracker.config.inventoryButton.alwaysShowExtra": "Always Show Extra Buttons"
 }

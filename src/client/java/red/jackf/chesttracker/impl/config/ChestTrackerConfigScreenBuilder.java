@@ -409,6 +409,20 @@ public class ChestTrackerConfigScreenBuilder {
                                 })
                         .build())
                 .option(Option.<Boolean>createBuilder()
+                        .name(translatable("chesttracker.config.storage.entityMemories"))
+                        .description(OptionDescription.of(
+                                translatable("chesttracker.config.storage.entityMemories.description")
+                        ))
+                        .controller(opt -> BooleanControllerBuilder.create(opt)
+                                .yesNoFormatter()
+                                .coloured(true))
+                        .binding(
+                                instance.defaults().storage.entityMemories,
+                                () -> instance.instance().storage.entityMemories,
+                                b -> instance.instance().storage.entityMemories = b
+                        )
+                        .build())
+                .option(Option.<Boolean>createBuilder()
                         .name(translatable("chesttracker.config.storage.asyncSaving"))
                         .description(OptionDescription.createBuilder()
                                 .text(translatable("chesttracker.config.storage.asyncSaving.description"))

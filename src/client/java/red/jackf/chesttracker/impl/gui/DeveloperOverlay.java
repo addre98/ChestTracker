@@ -37,23 +37,39 @@ public class DeveloperOverlay {
                     lines.add(loadedStr);
                     lines.add("Keys: " + bank.getKeys().size());
                     lines.add("Current key: " + currentKey);
-                    if (currentKey.isPresent()) {
-                        Optional<MemoryKey> currentMemoryKey = bank.getKey(currentKey.get());
-                        if (currentMemoryKey.isPresent())
-                            lines.add("Memories in current key: " + currentMemoryKey.get().getMemories().size());
-                        else
-                            lines.add("No memories in current key");
+                        Optional<MemoryKey> currentMemoryKey = currentKey.map(bank::getKey).orElse(Optional.empty());
+                        currentMemoryKey.ifPresentOrElse(
+                                key -> lines.add("Memories in current key: " + key.getMemories().size()),
+                                    () -> { if (currentKey.isPresent()) lines.add("No memories in current key"); }
+                            );
+                        lines.add("");
+                        provider.addDebugInformation(lines::add);
+                        lines.add("");
+                            var source = InteractionTracker.INSTANCE.getLastBlockSource();
+                            var sourceStr = source.map(blockSource -> blockSource.pos()
+                                    .toShortString() + "@" + blockSource.level()
+                                    .dimension().identifier()).orElse("<none>");
+                            lines.add("Location: " + sourceStr);
+
+                            var lastEntity = InteractionTracker.INSTANCE.getLastEntity();
+                            var entityStr = lastEntity.map(e -> "id=%s uuid=%s pos=%s".formatted(
+                                            e.entityId(),
+                                            e.entityUuid(),
+                                            e.pos().toShortString()))
+                                    .orElse("<none>");
+                            lines.add("Last Entity: " + entityStr);
+
+                            // check if entity exists in current bank/key
+                            lastEntity.ifPresent(e -> {
+                                boolean saved = currentMemoryKey
+                                        .flatMap(ignored -> bank.getKeyInternal(currentKey.orElse(null)))
+                                        .map(keyImpl -> keyImpl.getMemories().values().stream()
+                                                .anyMatch(mem -> e.entityUuid().equals(mem.entityUuid())))
+                                        .orElse(false);
+                                lines.add("Entity saved: " + saved);
+                            });
+                        }, () -> lines.add("No memory bank loaded"));
                     }
-                    lines.add("");
-                    provider.addDebugInformation(lines::add);
-                    lines.add("");
-                    var source = InteractionTracker.INSTANCE.getLastBlockSource();
-                    var sourceStr = source.map(blockSource -> blockSource.pos()
-                            .toShortString() + "@" + blockSource.level()
-                            .dimension().identifier()).orElse("<none>");
-                    lines.add("Location: " + sourceStr);
-                }, () -> lines.add("No memory bank loaded"));
-            }
 
 
             for (int i = 0; i < lines.size(); i++) {

@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * <p>List of items and other details for a location. Obtained from memory keys in {@link MemoryBank}.</p>
@@ -34,12 +35,14 @@ public final class Memory {
     public static final long UNKNOWN_WORLD_TIMESTAMP = -437821L;
     public static final long UNKNOWN_LOADED_TIMESTAMP = -437822L;
 
+    private static final Codec<UUID> UUID_CODEC = Codec.STRING.xmap(UUID::fromString, UUID::toString);
+
     public static final Codec<Memory> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                             ModCodecs.OPTIONAL_ITEMSTACK_UNCAPPED_SIZE.listOf().fieldOf("items")
                                     .forGetter(Memory::fullItems),
                             ComponentSerialization.CODEC.optionalFieldOf("name")
-                                                  .forGetter(m -> Optional.ofNullable(m.name)),
+                                                  .forGetter((Memory m) -> Optional.ofNullable(m.name)),
                             ModCodecs.BLOCK_POS_STRING.listOf().optionalFieldOf("otherPositions", Collections.emptyList())
                                     .forGetter(Memory::otherPositions),
                             BuiltInRegistries.BLOCK.byNameCodec().optionalFieldOf("container")
@@ -49,15 +52,21 @@ public final class Memory {
                             Codec.LONG.optionalFieldOf("worldTimestamp", UNKNOWN_WORLD_TIMESTAMP)
                                     .forGetter(Memory::inGameTimestamp),
                             ExtraCodecs.INSTANT_ISO8601.optionalFieldOf("realTimestamp", UNKNOWN_REAL_TIMESTAMP)
-                                    .forGetter(Memory::realTimestamp)
-                    ).apply(instance, (items, name, otherPositions, container, loadedTimestamp, worldTimestamp, realTimestamp) -> new Memory(
+                                    .forGetter(Memory::realTimestamp),
+                            Codec.INT.optionalFieldOf("entityId")
+                                    .forGetter((Memory m) -> Optional.ofNullable(m.entityId)),
+                            UUID_CODEC.optionalFieldOf("entityUuid")
+                                    .forGetter((Memory m) -> Optional.ofNullable(m.entityUuid))
+                    ).apply(instance, (items, name, otherPositions, container, loadedTimestamp, worldTimestamp, realTimestamp, entityId, entityUuid) -> new Memory(
                             items,
                             name.orElse(null),
                             otherPositions,
                             container,
                             loadedTimestamp,
                             worldTimestamp,
-                            realTimestamp
+                            realTimestamp,
+                            entityId.orElse(null),
+                            entityUuid.orElse(null)
                     )));
 
 
@@ -66,6 +75,8 @@ public final class Memory {
     private final @Nullable Component name;
     private final List<BlockPos> otherPositions;
     private final Optional<Block> container;
+    private final @Nullable Integer entityId;
+    private final @Nullable java.util.UUID entityUuid;
     private Long loadedTimestamp;
     private Long inGameTimestamp;
     private Instant realTimestamp;
@@ -166,6 +177,20 @@ public final class Memory {
     }
 
     /**
+     * @return The in-memory entity id associated with this memory, if it originated from an entity container.
+     */
+    public @Nullable Integer entityId() {
+        return entityId;
+    }
+
+    /**
+     * @return UUID of the source entity, if available.
+     */
+    public @Nullable java.util.UUID entityUuid() {
+        return entityUuid;
+    }
+
+    /**
      * Refreshes the timestamps of this memory. These timestamps are checked as part of the memory integrity checking.
      *
      * @param memoryBankLoadedTime Time that the memory bank has been loaded, in ticks.
@@ -211,7 +236,9 @@ public final class Memory {
             Optional<Block> container,
             long loadedTimestamp,
             long inGameTimestamp,
-            Instant realTimestamp) {
+            Instant realTimestamp,
+            @Nullable Integer entityId,
+            @Nullable java.util.UUID entityUuid) {
         this.fullItems = ImmutableList.copyOf(items);
         this.items = this.fullItems.stream().filter(stack -> !stack.isEmpty()).toList();
         this.name = name;
@@ -220,6 +247,8 @@ public final class Memory {
         this.inGameTimestamp = inGameTimestamp;
         this.realTimestamp = realTimestamp;
         this.container = container;
+        this.entityId = entityId;
+        this.entityUuid = entityUuid;
     }
 
     public void populate(MemoryKeyImpl key, BlockPos pos) {

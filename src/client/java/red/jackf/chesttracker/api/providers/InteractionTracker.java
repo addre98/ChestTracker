@@ -29,8 +29,33 @@ public interface InteractionTracker {
     Optional<ClientBlockSource> getLastBlockSource();
 
     /**
+     * Get details about the last entity the player interacted with that could provide a container.
+     *
+     * @return Optional containing the entity id and position, if any.
+     */
+    Optional<EntityInteraction> getLastEntity();
+
+    /**
+     * Get the type of the last interaction that produced stored context.
+     */
+    Optional<InteractionType> getLastInteractionType();
+
+    /**
      * Clear the interaction tracker. This should generally be used after adding a memory in order to prevent desync -
      * think a player right-clicking a random block with no GUi then the server opens one from their end separately.
      */
     void clear();
+
+    /**
+     * Details about the last interacted entity.
+     *
+     * @param entityId In-game entity id
+     * @param pos      Block position of the entity at interaction time
+     */
+    record EntityInteraction(int entityId, java.util.UUID entityUuid, net.minecraft.core.BlockPos pos) {}
+
+    enum InteractionType {
+        BLOCK,
+        ENTITY
+    }
 }

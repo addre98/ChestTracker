@@ -61,8 +61,12 @@ public class MemoryIntegrity {
             // Called when a player breaks a block, to remove memories that would be contained there
             if (bank.getMetadata().getIntegritySettings().removeOnPlayerBlockBreak) {
                 ProviderUtils.getPlayersCurrentKey().ifPresent(currentKey -> {
-                    bank.removeMemory(currentKey, cbs.pos());
-                    LOGGER.debug("Player Destroy Block: Removing {}@{}", cbs.pos().toShortString(), currentKey);
+                    var key = bank.getKeyInternal(currentKey);
+                    boolean isEntityMemory = key.flatMap(k -> k.get(cbs.pos())).map(Memory::entityId).isPresent();
+                    if (!isEntityMemory) {
+                        bank.removeMemory(currentKey, cbs.pos());
+                        LOGGER.debug("Player Destroy Block: Removing {}@{}", cbs.pos().toShortString(), currentKey);
+                    }
                 });
             }
         }));
@@ -147,8 +151,8 @@ public class MemoryIntegrity {
                 }
             }
 
-            // check if block is valid
-            if (integrity.checkPeriodicallyForMissingBlocks) {
+            // check if block is valid (skip entity-based memories)
+            if (integrity.checkPeriodicallyForMissingBlocks && currentMemory.entityId() == null) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 Identifier playerCurrentKey = ProviderUtils.getPlayersCurrentKey().orElse(null);
 
