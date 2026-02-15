@@ -113,6 +113,9 @@ public class ChestTrackerConfig {
         @SerialEntry(comment = "Asynchronous file saving (unstable), or synchronous (causes freezes but works stably)")
         public boolean AsyncSaving = false;
 
+        @SerialEntry(comment = "Store and search memories in container entities (chest boats, minecarts, etc.)")
+        public boolean entityMemories = true;
+
         @SerialEntry(comment = "Whether the JSON files in the memory directory should be readable, or compacted.")
         public boolean readableJsonMemories = false;
 
