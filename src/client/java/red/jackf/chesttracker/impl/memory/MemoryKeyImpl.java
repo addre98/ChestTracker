@@ -76,6 +76,27 @@ public class MemoryKeyImpl implements MemoryKey {
         return this.memories;
     }
 
+    /**
+     * View of memories with entity-backed entries mapped to their current positions; entries whose entity is not loaded
+     * are omitted.
+     */
+    public Map<BlockPos, Memory> getRenderableMemories() {
+        Map<BlockPos, Memory> visible = new HashMap<>();
+        var level = Minecraft.getInstance().level;
+        for (Map.Entry<BlockPos, Memory> entry : this.memories.entrySet()) {
+            Integer entityId = entry.getValue().entityId();
+            if (entityId != null) {
+                if (level == null) continue;
+                var entity = level.getEntity(entityId);
+                if (entity == null) continue;
+                visible.put(entity.blockPosition(), entry.getValue());
+            } else {
+                visible.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return visible;
+    }
+
     public Map<BlockPos, Memory> getNamedMemories() {
         return this.namedMemories;
     }
@@ -93,6 +114,21 @@ public class MemoryKeyImpl implements MemoryKey {
                 || this.memories.containsKey(position); // already a memory
         if (!shouldAdd) {
             return;
+        }
+
+        // If this memory comes from an entity, replace any existing memory for the same entity id
+        if (memory.entityId() != null) {
+            BlockPos toRemove = null;
+            for (Map.Entry<BlockPos, Memory> entry : this.memories.entrySet()) {
+                Integer existingId = entry.getValue().entityId();
+                if (existingId != null && existingId.equals(memory.entityId())) {
+                    toRemove = entry.getKey();
+                    break;
+                }
+            }
+            if (toRemove != null) {
+                this.remove(toRemove);
+            }
         }
 
         memory.populate(this, position);
@@ -147,8 +183,26 @@ public class MemoryKeyImpl implements MemoryKey {
 
     @Override
     public List<ItemStack> getCounts(CountingPredicate predicate, StackMergeMode stackMergeMode, boolean unpackNested) {
+        var level = Minecraft.getInstance().level;
+        boolean entitiesEnabled = red.jackf.chesttracker.impl.config.ChestTrackerConfig.INSTANCE.instance().storage.entityMemories;
+
         List<List<ItemStack>> items = this.memories.entrySet().stream()
-                .filter(predicate)
+                .filter(entry -> {
+                    Integer entityId = entry.getValue().entityId();
+                    java.util.UUID entityUuid = entry.getValue().entityUuid();
+                    BlockPos pos = entry.getKey();
+                    if (entityId != null) {
+                        if (!entitiesEnabled) return false;
+                        if (level == null) return false;
+                        var entity = level.getEntity(entityId);
+                        if (entity == null && entityUuid != null) entity = level.getEntity(entityUuid);
+                        if (entity == null) return false;
+                        // refresh id if it changed
+                        if (entityId != entity.getId()) entry.getValue().touch(this.memoryBank.getMetadata().getLoadedTime(), level.getGameTime());
+                        pos = entity.blockPosition();
+                    }
+                    return predicate.test(pos, entry.getValue());
+                })
                 .map(entry -> {
                     if (unpackNested) {
                         return entry.getValue().items().stream()
@@ -170,22 +224,45 @@ public class MemoryKeyImpl implements MemoryKey {
         List<SearchResult> results = new ArrayList<>();
         final long rangeSquared = (long) context.metadata().getSearchSettings().searchRange
                                 * (long) context.metadata().getSearchSettings().searchRange;
+        var level = Minecraft.getInstance().level;
+        boolean entitiesEnabled = red.jackf.chesttracker.impl.config.ChestTrackerConfig.INSTANCE.instance().storage.entityMemories;
 
         for (Map.Entry<BlockPos, Memory> entry : this.memories.entrySet()) {
-            if (entry.getKey().distToCenterSqr(context.rootPosition()) > rangeSquared) continue;
+            BlockPos resultPos = entry.getKey();
+
+            // For entity memories, use the live entity position and skip if not present
+            Integer entityId = entry.getValue().entityId();
+            java.util.UUID entityUuid = entry.getValue().entityUuid();
+            Integer liveEntityId = entityId;
+            if (entityId != null) {
+                if (!entitiesEnabled) continue;
+                if (level == null) continue;
+                var entity = level.getEntity(entityId);
+                if (entity == null && entityUuid != null) entity = level.getEntity(entityUuid);
+                if (entity == null) continue;
+                liveEntityId = entity.getId();
+                resultPos = entity.blockPosition();
+            }
+
+            if (resultPos.distToCenterSqr(context.rootPosition()) > rangeSquared) continue;
+
             Optional<ItemStack> matchingItem = entry.getValue().items().stream()
                     .filter(stack -> SearchRequest.check(stack, context.request()))
                     .findFirst();
             if (matchingItem.isEmpty()) continue;
 
-            SearchResult.Builder result = SearchResult.builder(entry.getKey())
+            SearchResult.Builder result = SearchResult.builder(resultPos)
                     .item(matchingItem.get())
                     .otherPositions(entry.getValue().otherPositions());
+
+            if (entityId != null && liveEntityId != null) {
+                result.entityId(liveEntityId);
+            }
 
             if (context.metadata().getCompatibilitySettings().nameRenderMode == NameRenderMode.FULL)
                 result.name(
                         entry.getValue().renderName(),
-                        Misc.getAverageOffsetFrom(entry.getKey(), entry.getValue().otherPositions()).add(0, 1, 0)
+                        Misc.getAverageOffsetFrom(resultPos, entry.getValue().otherPositions()).add(0, 1, 0)
                 );
 
             results.add(result.build());

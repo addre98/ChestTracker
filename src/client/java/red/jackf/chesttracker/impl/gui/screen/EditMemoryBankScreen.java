@@ -38,6 +38,7 @@ import red.jackf.whereisit.client.WhereIsItClient;
 import red.jackf.whereisit.client.render.Rendering;
 
 import java.util.*;
+import java.util.Objects;
 
 import static net.minecraft.network.chat.Component.literal;
 import static net.minecraft.network.chat.Component.translatable;
@@ -460,12 +461,17 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
             // TODO make this not an internal hack
             WhereIsItClient.closedScreenThisSearch = false;
             Rendering.resetSearchTime();
-            WhereIsItClient.recieveResults(currentMemories.getMemories().entrySet().stream()
-                                                          .map(e -> SearchResult.builder(e.getKey())
-                                                                                .name(e.getValue().renderName(), null)
-                                                                                .otherPositions(e.getValue().otherPositions())
-                                                                                .build())
-                                                          .toList());
+            WhereIsItClient.recieveResults(currentMemories.getRenderableMemories().entrySet().stream()
+                    .map(e -> {
+                        var memory = e.getValue();
+                        var pos = e.getKey();
+                        return SearchResult.builder(pos)
+                                .name(memory.renderName(), null)
+                                .otherPositions(memory.otherPositions())
+                                .build();
+                    })
+                    .filter(Objects::nonNull)
+                    .toList());
         });
     }
 
@@ -509,9 +515,7 @@ public class EditMemoryBankScreen extends BaseUtilScreen {
         ProviderUtils.getPlayersCurrentKey().ifPresent(currentKey -> {
             Pair<Set<BlockPos>, Set<BlockPos>> counts = partitionMemoriesInCurrentKey();
 
-            for (BlockPos pos : counts.getSecond()) {
-                memoryBank.remove(currentKey, pos);
-            }
+            counts.getSecond().forEach(pos -> memoryBank.remove(currentKey, pos));
 
             refreshManagementButtons();
         });

@@ -36,6 +36,22 @@ public interface MemoryBuilder {
     MemoryBuilder withCustomName(@Nullable Component name);
 
     /**
+     * Attach a live entity id when the memory originates from an entity container (e.g., chest minecart).
+     *
+     * @param entityId Entity id or null if not applicable
+     * @return This MemoryBuilder.
+     */
+    MemoryBuilder withEntityId(@Nullable Integer entityId);
+
+    /**
+     * Attach the entity UUID when available; used to remap ids after reloads.
+     *
+     * @param entityUuid UUID of source entity, or null
+     * @return This MemoryBuilder.
+     */
+    MemoryBuilder withEntityUuid(@Nullable java.util.UUID entityUuid);
+
+    /**
      * Designates that this memory was made in the given container block.
      *
      * @param container Block that this memory is located in
