@@ -1,5 +1,8 @@
 package red.jackf.chesttracker.api.providers.defaults;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.Container;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -14,6 +17,7 @@ import red.jackf.chesttracker.api.providers.context.BlockPlacedContext;
 import red.jackf.chesttracker.api.providers.context.ScreenCloseContext;
 import red.jackf.chesttracker.api.providers.context.ScreenOpenContext;
 import red.jackf.chesttracker.impl.ChestTracker;
+import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 import red.jackf.jackfredlib.api.base.ResultHolder;
 import red.jackf.jackfredlib.client.api.gps.Coordinate;
 import red.jackf.whereisit.api.search.ConnectedBlocksGrabber;
@@ -59,10 +63,51 @@ public class DefaultProvider extends ServerProvider {
     @Override
     public void onScreenClose(ScreenCloseContext context) {
         MemoryBankAccess.INSTANCE.getLoaded().ifPresent(bank -> {
+            // Prefer entity-based memories first
+            var lastType = InteractionTracker.INSTANCE.getLastInteractionType();
+            var entityOpt = InteractionTracker.INSTANCE.getLastEntity();
+            boolean entitiesEnabled = ChestTrackerConfig.INSTANCE.instance().storage.entityMemories;
+            if (entitiesEnabled && lastType.isPresent() && lastType.get() == InteractionTracker.InteractionType.ENTITY && entityOpt.isPresent()) {
+                ProviderUtils.getPlayersCurrentKey().ifPresent(key -> {
+                    var entityInteraction = entityOpt.get();
+                    ChestTracker.getLogger("DefaultProvider").debug("[ScreenClose] entity memory id={} uuid={} pos={} key={}", entityInteraction.entityId(), entityInteraction.entityUuid(), entityInteraction.pos().toShortString(), key);
+                    var memoryFromEntity = MemoryBuilder.create(context.getItems())
+                            .withCustomName(context.getCustomTitle().orElse(null))
+                            .withEntityId(entityInteraction.entityId())
+                            .withEntityUuid(entityInteraction.entityUuid())
+                            .build();
+                    bank.addMemory(key, entityInteraction.pos(), memoryFromEntity);
+                    InteractionTracker.INSTANCE.clear();
+                });
+                return;
+            }
+
+            // Fallback: if player is riding a container entity, capture it as entity memory
+            // Only if the last interaction was not explicitly a block interaction.
+            var player = Minecraft.getInstance().player;
+            if (entitiesEnabled
+                    && lastType.orElse(null) != InteractionTracker.InteractionType.BLOCK
+                    && player != null && player.getVehicle() instanceof Entity entity && entity instanceof Container) {
+                ProviderUtils.getPlayersCurrentKey().ifPresent(key -> {
+                    var pos = entity.blockPosition();
+                    var memoryFromEntity = MemoryBuilder.create(context.getItems())
+                            .withCustomName(context.getCustomTitle().orElse(null))
+                            .withEntityId(entity.getId())
+                            .withEntityUuid(entity.getUUID())
+                            .build();
+                    ChestTracker.getLogger("DefaultProvider").debug("[ScreenClose] vehicle entity memory id={} uuid={} pos={} key={}", entity.getId(), entity.getUUID(), pos.toShortString(), key);
+                    bank.addMemory(key, pos, memoryFromEntity);
+                    InteractionTracker.INSTANCE.clear();
+                });
+                return;
+            }
+
             ResultHolder<DefaultProviderScreenClose.Result> memory = DefaultProviderScreenClose.EVENT.invoker().createMemory(this, context);
 
             if (memory.hasValue()) {
+                ChestTracker.getLogger("DefaultProvider").debug("[ScreenClose] block memory key={} pos={}", memory.get().key(), memory.get().position().toShortString());
                 bank.addMemory(memory.get().key(), memory.get().position(), memory.get().memory());
+                InteractionTracker.INSTANCE.clear();
             }
         });
     }
