@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -371,12 +370,11 @@ public class ChestTrackerScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         this.ignoreTextInput = false;
-        /*if (this.getFocused() == search) {
-            if (keyCode == GLFW.GLFW_KEY_TAB) {
-                this.setFocused(null);
-                return true;
-            }
-        }*/
+        boolean searchFocused = this.search != null && this.search.isFocused();
+        if (!searchFocused && red.jackf.chesttracker.impl.ChestTracker.OPEN_GUI.matches(keyCode, scanCode)) {
+            this.onClose();
+            return true;
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
