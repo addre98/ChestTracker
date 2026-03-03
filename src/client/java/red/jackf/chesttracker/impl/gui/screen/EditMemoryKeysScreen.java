@@ -111,7 +111,7 @@ public class EditMemoryKeysScreen extends BaseUtilScreen {
                                         }
                                     }
                             )),
-                            ItemButton.Background.VANILLA))
+                            ItemButton.Background.CUSTOM))
                     .setTooltip(Tooltip.create(translatable("chesttracker.gui.editMemoryKeys.setIcon")));
 
             x += ItemButton.SIZE + spacing;
