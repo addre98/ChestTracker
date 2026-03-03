@@ -44,6 +44,11 @@ public class FileUtil {
             Files.createDirectories(path.getParent());
             DataResult<Tag> tag = codec.encodeStart(ops, object);
 
+            // If the registry-aware encode fails, fall back to plain NBT ops to avoid crashing.
+            if (tag.isError() && registries != null) {
+                LOGGER.warn("Registry NBT encode failed ({}); retrying without registries", tag.error().get().message());
+                tag = codec.encodeStart(NbtOps.INSTANCE, object);
+            }
             if (tag.isError()) {
                 throw new IOException("Error encoding to NBT %s".formatted(tag.error().get()));
             } else if (tag.isSuccess() && tag.result().get() instanceof CompoundTag compound) {
