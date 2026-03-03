@@ -380,6 +380,11 @@ public class ChestTrackerScreen extends Screen {
     @Override
     public boolean keyPressed(@NotNull KeyEvent event) {
         this.ignoreTextInput = false;
+        boolean searchFocused = this.search != null && this.search.isFocused();
+        if (!searchFocused && red.jackf.chesttracker.impl.ChestTracker.OPEN_GUI.matches(event)) {
+            this.onClose();
+            return true;
+        }
         return super.keyPressed(event);
     }
 
