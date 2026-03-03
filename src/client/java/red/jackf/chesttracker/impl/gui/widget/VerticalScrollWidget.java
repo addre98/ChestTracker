@@ -33,6 +33,10 @@ public class VerticalScrollWidget extends AbstractWidget {
     @Nullable
     private Consumer<Float> responder = null;
 
+    public boolean isScrolling() {
+        return this.scrolling;
+    }
+
     public VerticalScrollWidget(int x, int y, int height, Component message) {
         super(x, y, BAR_WIDTH, height, message);
     }
@@ -62,17 +66,15 @@ public class VerticalScrollWidget extends AbstractWidget {
                 HANDLE_HEIGHT);
     }
 
-    private boolean isWithinBounds(double x, double y) {
-        return x >= this.getX() && x < (this.getX() + getWidth()) && y >= getY() && y < (getY() + getHeight());
-    }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (this.visible && !this.disabled && this.isWithinBounds(event.x(), event.y()) && event.button() == 0) {
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+        super.onClick(event, isDoubleClick);
+        if (this.visible && !this.disabled && event.button() == 0) {
+            double progress = (event.y() - this.getY() - INSET - HANDLE_HEIGHT / 2.0)
+                    / (this.getHeight() - 2 * INSET - HANDLE_HEIGHT);
+            setProgress((float) progress);
             this.scrolling = true;
-            return true;
-        } else {
-            return super.mouseClicked(event, isDoubleClick);
         }
     }
 
@@ -87,23 +89,37 @@ public class VerticalScrollWidget extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (this.scrolling && event.button() == 0) {
-            double progress = (mouseY - this.getY() - INSET - HANDLE_HEIGHT / 2.0)
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0) {
+            this.scrolling = false;
+            return true;
+        }
+        return super.mouseReleased(event);
+    }
+
+    @Override
+    protected void onDrag(MouseButtonEvent event, double deltaX, double deltaY) {
+        if (this.visible && !this.disabled && this.scrolling) {
+            double handleCenter = this.progress * (this.getHeight() - 2 * INSET - HANDLE_HEIGHT)
+                    + INSET + HANDLE_HEIGHT / 2.0;
+            handleCenter += deltaY;
+            double progress = (handleCenter - INSET - HANDLE_HEIGHT / 2.0)
                     / (this.getHeight() - 2 * INSET - HANDLE_HEIGHT);
             setProgress((float) progress);
-            return true;
         } else {
-            return super.mouseDragged(event, mouseX, mouseY);
+            super.onDrag(event, deltaX, deltaY);
         }
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        if (event.button() == 0) {
-            this.scrolling = false;
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (this.visible && !this.disabled && this.scrolling) {
+            double progress = (event.y() - this.getY() - INSET - HANDLE_HEIGHT / 2.0)
+                    / (this.getHeight() - 2 * INSET - HANDLE_HEIGHT);
+            setProgress((float) progress);
+            return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     public void setProgress(float value) {
