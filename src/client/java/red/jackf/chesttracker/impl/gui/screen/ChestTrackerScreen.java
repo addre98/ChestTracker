@@ -398,6 +398,9 @@ public class ChestTrackerScreen extends Screen {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        if (scroll != null && (scroll.isScrolling() || scroll.isMouseOver(event.x(), event.y()))) {
+            if (scroll.mouseReleased(event)) return true;
+        }
         if (resize != null) {
             boolean handled = resize.mouseReleased(event);
             if (handled) return true;
@@ -407,6 +410,11 @@ public class ChestTrackerScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (scroll != null && (scroll.isScrolling() || scroll.isMouseOver(mouseX, mouseY))) {
+            if (scroll.mouseDragged(event, mouseX, mouseY)) {
+                return true;
+            }
+        }
         if (resize != null && resize.mouseDragged(event, mouseX, mouseY)) {
             return true;
         }
