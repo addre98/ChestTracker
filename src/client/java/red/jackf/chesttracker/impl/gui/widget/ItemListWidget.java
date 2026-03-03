@@ -39,6 +39,10 @@ public class ItemListWidget extends AbstractWidget {
     private List<ItemStack> items = Collections.emptyList();
     private int offset = 0;
     private boolean hideTooltip;
+    private boolean hasTooltip = false;
+    private List<ClientTooltipComponent> pendingTooltip = Collections.emptyList();
+    private int pendingTooltipX = 0;
+    private int pendingTooltipY = 0;
 
     public ItemListWidget(int x, int y, int gridWidth, int gridHeight) {
         super(x, y, gridWidth * GuiConstants.GRID_SLOT_SIZE, gridHeight * GuiConstants.GRID_SLOT_SIZE, Component.empty());
@@ -85,6 +89,8 @@ public class ItemListWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.hasTooltip = false;
+        this.pendingTooltip = Collections.emptyList();
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, getWidth(), getHeight(),
                 0, 0, getX(), getY(), getWidth(), getHeight());
         this.renderItems(graphics);
@@ -178,16 +184,24 @@ public class ItemListWidget extends AbstractWidget {
             });
 
             if (!components.isEmpty()) {
-                graphics.renderTooltip(
-                        Minecraft.getInstance().font,
-                        components,
-                        mouseX,
-                        mouseY + 12,
-                        DefaultTooltipPositioner.INSTANCE,
-                        null
-                );
+                this.hasTooltip = true;
+                this.pendingTooltip = components;
+                this.pendingTooltipX = mouseX;
+                this.pendingTooltipY = mouseY + 12;
             }
         }
+    }
+
+    public void renderTooltip(GuiGraphics graphics) {
+        if (!this.hasTooltip || this.pendingTooltip.isEmpty()) return;
+        graphics.renderTooltip(
+                Minecraft.getInstance().font,
+                this.pendingTooltip,
+                this.pendingTooltipX,
+                this.pendingTooltipY,
+                DefaultTooltipPositioner.INSTANCE,
+                null
+        );
     }
 
     @Override
