@@ -18,7 +18,7 @@ public record MemoryKeyIcon(net.minecraft.resources.Identifier id, ItemStack ico
             instance.group(
                     Identifier.CODEC.fieldOf("id").forGetter(MemoryKeyIcon::id),
                     JFLCodecs.firstInList(
-                            ItemStack.SINGLE_ITEM_CODEC,
+                            ItemStack.CODEC,
                             ModCodecs.ITEM_STACK_IGNORE_COUNT
                     ).fieldOf("icon").forGetter(MemoryKeyIcon::icon)
             ).apply(instance, MemoryKeyIcon::new));

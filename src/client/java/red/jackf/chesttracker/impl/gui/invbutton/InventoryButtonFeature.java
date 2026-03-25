@@ -34,7 +34,7 @@ public class InventoryButtonFeature {
             ((CTButtonScreenDuck) menuScreen).chesttracker$setButton(button);
 
             // add to start so interactions happen first
-            Screens.getButtons(menuScreen).add(0, button);
+            Screens.getWidgets(menuScreen).add(0, button);
         }
     }
 }

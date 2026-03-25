@@ -62,7 +62,7 @@ public class ItemStacks {
     }
 
     public static boolean tagPredicate(ItemStack stack, String filter) {
-        return stack.getItemHolder().tags().anyMatch(tag -> tag.location().getPath().contains(filter));
+        return stack.typeHolder().tags().anyMatch(tag -> tag.location().getPath().contains(filter));
     }
 
     private static boolean lorePredicate(ItemStack stack, String filter) {

@@ -1,7 +1,8 @@
 package red.jackf.chesttracker.impl.gui;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import red.jackf.chesttracker.impl.ChestTracker;
 import red.jackf.chesttracker.api.memory.MemoryKey;
 import red.jackf.chesttracker.api.providers.InteractionTracker;
 import red.jackf.chesttracker.api.providers.ProviderUtils;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 public class DeveloperOverlay {
     public static void setup() {
-        HudRenderCallback.EVENT.register((graphics, delta) -> {
+        HudElementRegistry.addLast(ChestTracker.id("dev_hud"), (graphics, delta) -> {
             var provider = ProviderHandler.INSTANCE.getCurrentProvider().orElse(null);
 
             if (!ChestTrackerConfig.INSTANCE.instance().debug.showDevHud) return;
@@ -74,7 +75,7 @@ public class DeveloperOverlay {
 
             for (int i = 0; i < lines.size(); i++) {
                 var line = lines.get(i);
-                graphics.drawString(Minecraft.getInstance().font, line, 10, 10 + (9 * i), 0xFF_FFFFFF);
+                graphics.text(Minecraft.getInstance().font, line, 10, 10 + (9 * i), 0xFF_FFFFFF);
             }
         });
     }

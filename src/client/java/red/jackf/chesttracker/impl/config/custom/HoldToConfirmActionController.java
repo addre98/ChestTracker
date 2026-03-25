@@ -7,7 +7,7 @@ import dev.isxander.yacl3.gui.AbstractWidget;
 import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.ActionController;
 import dev.isxander.yacl3.gui.controllers.ControllerWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -60,8 +60,8 @@ public class HoldToConfirmActionController implements Controller<BiConsumer<YACL
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-            super.render(graphics, mouseX, mouseY, delta);
+        public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+            super.extractRenderState(graphics, mouseX, mouseY, delta);
             if (progress > 0f)
                 graphics.fill(getDimension().x() + 1,
                         getDimension().y() + 1,

@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.gui.widget;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -88,7 +88,7 @@ public class ItemListWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         this.hasTooltip = false;
         this.pendingTooltip = Collections.emptyList();
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, getWidth(), getHeight(),
@@ -98,14 +98,14 @@ public class ItemListWidget extends AbstractWidget {
         this.renderAdditional(graphics, mouseX, mouseY);
     }
 
-    private void renderItems(GuiGraphics graphics) {
+    private void renderItems(GuiGraphicsExtractor graphics) {
         var items = getOffsetItems();
         for (int i = 0; i < (gridWidth * gridHeight); i++) {
             var x = this.getX() + GuiConstants.GRID_SLOT_SIZE * (i % gridWidth);
             var y = this.getY() + GuiConstants.GRID_SLOT_SIZE * (i / gridWidth);
             if (i < items.size()) {
                 var item = items.get(i);
-                graphics.renderItem(item, x + 1, y + 1);
+                graphics.item(item, x + 1, y + 1);
             }
         }
     }
@@ -120,7 +120,7 @@ public class ItemListWidget extends AbstractWidget {
         return Pair.of(textScale, currentScale);
     }
 
-    private void renderItemDecorations(GuiGraphics graphics) {
+    private void renderItemDecorations(GuiGraphicsExtractor graphics) {
         var items = getOffsetItems();
         for (int i = 0; i < items.size(); i++) {
             ItemStack item = items.get(i);
@@ -133,7 +133,7 @@ public class ItemListWidget extends AbstractWidget {
             graphics.pose().translate(bottomRightX - 1, bottomRightY - 1);
 
             // durability, scaled normally
-            graphics.renderItemDecorations(Minecraft.getInstance().font, item, offset, offset, "");
+            graphics.itemDecorations(Minecraft.getInstance().font, item, offset, offset, "");
 
             // scale down for text
             Pair<Integer, Integer> scales = getScales();
@@ -144,12 +144,12 @@ public class ItemListWidget extends AbstractWidget {
 
             // render count text scaled down
             String text = Strings.magnitude(item.getCount(), 0);
-            graphics.renderItemDecorations(Minecraft.getInstance().font, DUMMY_ITEM_FOR_COUNT, offset, offset, text);
+            graphics.itemDecorations(Minecraft.getInstance().font, DUMMY_ITEM_FOR_COUNT, offset, offset, text);
             graphics.pose().popMatrix();
         }
     }
 
-    private void renderAdditional(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderAdditional(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         var items = getOffsetItems();
         if (!this.isHovered()) return;
         var x = (mouseX - getX()) / GuiConstants.GRID_SLOT_SIZE;
@@ -192,9 +192,9 @@ public class ItemListWidget extends AbstractWidget {
         }
     }
 
-    public void renderTooltip(GuiGraphics graphics) {
+    public void renderTooltip(GuiGraphicsExtractor graphics) {
         if (!this.hasTooltip || this.pendingTooltip.isEmpty()) return;
-        graphics.renderTooltip(
+        graphics.tooltip(
                 Minecraft.getInstance().font,
                 this.pendingTooltip,
                 this.pendingTooltipX,

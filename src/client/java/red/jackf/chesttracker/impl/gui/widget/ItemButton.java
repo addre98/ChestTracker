@@ -1,6 +1,6 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -28,15 +28,15 @@ public class ItemButton extends Button {
     }
 
     @Override
-    protected void renderContents(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         switch (background) {
-            case VANILLA -> super.renderWidget(graphics, mouseX, mouseY, partialTick);
+            case VANILLA -> super.extractDefaultSprite(graphics);
             case CUSTOM -> {
                 Identifier texture = this.highlighted || this.isHovered() ? TEXTURE.enabledFocused() : TEXTURE.enabled();
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), SIZE, SIZE);
             }
         }
-        graphics.renderItem(stack, this.getX() + 2, this.getY() + 2);
+        graphics.item(stack, this.getX() + 2, this.getY() + 2);
     }
 
     public enum Background {

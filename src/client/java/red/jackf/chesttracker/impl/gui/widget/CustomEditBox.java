@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -20,10 +20,10 @@ public class CustomEditBox extends EditBox {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.SEARCH_BAR_SPRITE, this.getX(), this.getY(), this.getWidth(), this.getHeight());
         graphics.pose().translate(2.0f, 2.0f);
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTick);
         graphics.pose().translate(-2.0f, -2.0f);
     }
 

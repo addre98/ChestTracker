@@ -71,7 +71,7 @@ public class MemoryIntegrity {
             }
         }));
 
-        ClientTickEvents.END_WORLD_TICK.register(level -> {
+        ClientTickEvents.END_LEVEL_TICK.register(level -> {
             MemoryBankImpl memoryBank = MemoryBankAccessImpl.INSTANCE.getLoadedInternal().orElse(null);
 
             if (memoryBank == null) {

@@ -1,10 +1,10 @@
 package red.jackf.chesttracker.impl.compat.mods.shulkerboxtooltip;
 
-import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
+/*import com.misterpemodder.shulkerboxtooltip.api.PreviewContext;
 import com.misterpemodder.shulkerboxtooltip.api.PreviewType;
 import com.misterpemodder.shulkerboxtooltip.api.ShulkerBoxTooltipApi;
 import com.misterpemodder.shulkerboxtooltip.api.color.ColorKey;
-import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;
+import com.misterpemodder.shulkerboxtooltip.api.provider.PreviewProvider;*/
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static net.minecraft.network.chat.Component.translatable;
 
-public class ClientEnderChestPreviewProvider implements PreviewProvider {
+/*public class ClientEnderChestPreviewProvider implements PreviewProvider {
     private static Optional<MemoryKey> getNonEmptyEnderChestMemoryKey() {
         return MemoryBankAccess.INSTANCE.getLoaded()
                 .flatMap(bank -> bank.getKey(CommonKeys.ENDER_CHEST_KEY))
@@ -77,3 +77,4 @@ public class ClientEnderChestPreviewProvider implements PreviewProvider {
             return Collections.emptyList();
     }
 }
+*/

@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.invbutton.ui;
 
 import net.minecraft.util.Util;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -39,7 +39,7 @@ public class SecondaryButton extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         Identifier texture = getSprites().get(this.isActive(), this.isHoveredOrFocused());
 
         long tweenTime = this.buttonIndex * TWEEN_TIME;

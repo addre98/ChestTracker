@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.CharacterEvent;
@@ -23,10 +23,10 @@ public class WidgetZOffsetWrapper<T extends AbstractWidget> extends AbstractWidg
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.pose().pushMatrix(); // 2D equivalent of pushPose()
         guiGraphics.pose().translate(0.0f, 0.0f); // only X and Y; no Z in Matrix3x2fStack
-        ((AbstractWidgetAccessor) baseWidget).renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+        ((AbstractWidgetAccessor) baseWidget).extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.pose().popMatrix(); // 2D equivalent of popPose()
     }
 

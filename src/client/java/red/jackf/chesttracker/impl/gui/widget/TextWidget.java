@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -28,10 +28,10 @@ public final class TextWidget implements Renderable {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         var font = Minecraft.getInstance().font;
         var textX = x + (int) (alignment.factor * (width - font.width(text)));
-        graphics.drawString(font, text, textX, y, colour, false);
+        graphics.text(font, text, textX, y, colour, false);
     }
 
     public enum Alignment {

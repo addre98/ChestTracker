@@ -2,13 +2,14 @@ package red.jackf.chesttracker.mixins;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,13 +25,12 @@ public class LevelRendererMixin {
             GraphicsResourceAllocator allocator,
             DeltaTracker tracker,
             boolean blockOutline,
-            Camera cam,
-            Matrix4f frustum,
-            Matrix4f projection,
-            Matrix4f culling,
+            CameraRenderState cameraRenderState,
+            Matrix4fc frustum,
             GpuBufferSlice fog,
             Vector4f fogCol,
             boolean sky,
+            ChunkSectionsToRender chunkSections,
             CallbackInfo ci) {
 
         // Planning the tags
@@ -41,10 +41,10 @@ public class LevelRendererMixin {
             //GL11.glDisable(GL11.GL_DEPTH_TEST);
             //GL11.glDepthFunc(GL11.GL_ALWAYS);
 
-            PoseStack poseStack = new PoseStack();
+            Camera cam = Minecraft.getInstance().gameRenderer.getMainCamera();
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
-            NameRenderer.renderLabels(poseStack, cam, bufferSource);
+            NameRenderer.renderLabels(null, cam, bufferSource);
             bufferSource.endBatch();
 
             //GL11.glDepthFunc(GL11.GL_LEQUAL);

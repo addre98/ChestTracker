@@ -1,6 +1,6 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -47,7 +47,7 @@ public class DragHandleWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
                 this.isHoveredOrFocused() ? TEXTURE.enabledFocused() : TEXTURE.enabled(),
                 this.getX(), this.getY(), WIDTH, HEIGHT

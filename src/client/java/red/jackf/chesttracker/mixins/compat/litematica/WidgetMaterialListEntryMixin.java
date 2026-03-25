@@ -1,12 +1,12 @@
 package red.jackf.chesttracker.mixins.compat.litematica;
 
-import fi.dy.masa.litematica.gui.widgets.WidgetListMaterialList;
+/*import fi.dy.masa.litematica.gui.widgets.WidgetListMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetMaterialListEntry;
 import fi.dy.masa.litematica.materials.MaterialListBase;
 import fi.dy.masa.litematica.materials.MaterialListEntry;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntrySortable;
-import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.StringUtils;*/
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +20,7 @@ import red.jackf.whereisit.client.api.events.SearchRequestPopulator;
 /**
  * Adds a 'Search' button to each individual material entry on the material list.
  */
+/*
 @Mixin(value = WidgetMaterialListEntry.class, remap = false)
 public abstract class WidgetMaterialListEntryMixin extends WidgetListEntrySortable<MaterialListEntry> {
     private WidgetMaterialListEntryMixin(int x, int y, int width, int height, MaterialListEntry entry, int listIndex) {
@@ -46,3 +47,4 @@ public abstract class WidgetMaterialListEntryMixin extends WidgetListEntrySortab
 
     }
 }
+*/

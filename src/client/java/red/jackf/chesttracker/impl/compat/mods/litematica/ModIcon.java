@@ -1,6 +1,6 @@
 package red.jackf.chesttracker.impl.compat.mods.litematica;
 
-import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+/*import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import net.minecraft.resources.Identifier;
@@ -39,3 +39,4 @@ public enum ModIcon implements IGuiIcon {
         return ChestTracker.id("textures/gui/litematica_icon.png");
     }
 }
+*/

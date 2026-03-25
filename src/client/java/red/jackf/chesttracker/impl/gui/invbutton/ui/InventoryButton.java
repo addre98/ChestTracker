@@ -3,7 +3,7 @@ package red.jackf.chesttracker.impl.gui.invbutton.ui;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -104,7 +104,7 @@ public class InventoryButton extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (!isDragging) {
             this.applyPosition(false);
             this.showExtraButtons(alwaysShowExtra() || this.isHovered() || this.isExpandedHover(mouseX, mouseY));
@@ -116,7 +116,7 @@ public class InventoryButton extends AbstractWidget {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, this.getX() - 1, this.getY() - 1, IMAGE_SIZE, IMAGE_SIZE, -1);
 
         for (AbstractWidget secondary : this.secondaryButtons) {
-            secondary.render(graphics, mouseX, mouseY, partialTick);
+            secondary.extractRenderState(graphics, mouseX, mouseY, partialTick);
         }
     }
 

@@ -40,13 +40,7 @@ public class HypixelProvider extends ServerProvider {
     public static final Identifier SKYBLOCK_SACKS = Identifier.fromNamespaceAndPath("hypixel", "skyblock_sacks");
     public static final Identifier SKYBLOCK_VAULT = Identifier.fromNamespaceAndPath("hypixel", "skyblock_vault");
 
-    private static final List<MemoryKeyIcon> ICONS = Streams.concat(Stream.of(
-            new MemoryKeyIcon(SKYBLOCK_PRIVATE_ISLAND, Items.OAK_SAPLING.getDefaultInstance()),
-            new MemoryKeyIcon(SKYBLOCK_ENDER_CHEST, Items.ENDER_CHEST.getDefaultInstance()),
-            new MemoryKeyIcon(SKYBLOCK_BACKBACKS, Items.SHULKER_BOX.getDefaultInstance()),
-            new MemoryKeyIcon(SKYBLOCK_SACKS, Items.BUNDLE.getDefaultInstance()),
-            new MemoryKeyIcon(SKYBLOCK_VAULT, Items.IRON_DOOR.getDefaultInstance())
-    ), ProviderUtils.getDefaultIcons().stream()).toList();
+    private static volatile List<MemoryKeyIcon> icons;
 
     private boolean isOnSMP = false;
 
@@ -63,7 +57,7 @@ public class HypixelProvider extends ServerProvider {
 
     @Override
     public List<MemoryKeyIcon> getMemoryKeyIcons() {
-        return ICONS;
+        return getIcons();
     }
 
     // Detects joining SMP servers.
@@ -202,5 +196,27 @@ public class HypixelProvider extends ServerProvider {
         } else if (isOnSMP) {
             reciever.accept("On SMP");
         }
+    }
+
+    private static List<MemoryKeyIcon> getIcons() {
+        List<MemoryKeyIcon> cached = icons;
+        if (cached != null) return cached;
+
+        try {
+            cached = Streams.concat(Stream.of(
+                    new MemoryKeyIcon(SKYBLOCK_PRIVATE_ISLAND, Items.OAK_SAPLING.getDefaultInstance()),
+                    new MemoryKeyIcon(SKYBLOCK_ENDER_CHEST, Items.ENDER_CHEST.getDefaultInstance()),
+                    new MemoryKeyIcon(SKYBLOCK_BACKBACKS, Items.SHULKER_BOX.getDefaultInstance()),
+                    new MemoryKeyIcon(SKYBLOCK_SACKS, Items.BUNDLE.getDefaultInstance()),
+                    new MemoryKeyIcon(SKYBLOCK_VAULT, Items.IRON_DOOR.getDefaultInstance())
+            ), ProviderUtils.getDefaultIcons().stream()).toList();
+        } catch (RuntimeException ex) {
+            ChestTracker.getLogger("HypixelProvider").warn(
+                    "Icons not available yet; retrying once item components are bound.", ex);
+            return List.of();
+        }
+
+        icons = cached;
+        return cached;
     }
 }

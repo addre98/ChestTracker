@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.screen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -356,16 +356,16 @@ public class ChestTrackerScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float tickDelta) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float tickDelta) {
         this.itemList.setHideTooltip(this.search.isFocused() && ifSearchables(a -> a.isMouseOver(mouseX, mouseY)));
-        super.render(graphics, mouseX, mouseY, tickDelta); // widgets
-        graphics.drawString(this.font, this.title, left + TITLE_LEFT, top + TITLE_TOP, TextColours.getLabelColour(), false); // title
+        super.extractRenderState(graphics, mouseX, mouseY, tickDelta); // widgets
+        graphics.text(this.font, this.title, left + TITLE_LEFT, top + TITLE_TOP, TextColours.getLabelColour(), false); // title
         this.itemList.renderTooltip(graphics);
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics, int i, int j, float f) {
-        super.renderBackground(graphics, i, j, f);
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int i, int j, float f) {
+        super.extractBackground(graphics, i, j, f);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.BACKGROUND_SPRITE, left, top, menuWidth, menuHeight);
         ifSearchables(() -> graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.SEARCH_BAR_SPRITE, search.getX() - 2, search.getY() - 2, search.getWidth() + 4, search.getHeight()));
     }

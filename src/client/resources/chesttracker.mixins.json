@@ -13,9 +13,6 @@
     "ClientPacketListenerMixin",
     "EditBoxAccessor",
     "ScreenMixin",
-    "compat.litematica.GuiMaterialListMixin",
-    "compat.litematica.MaterialListUtilsMixin",
-    "compat.litematica.WidgetMaterialListEntryMixin",
     "datafix.V1460Mixin",
     "LevelRendererMixin"
   ],

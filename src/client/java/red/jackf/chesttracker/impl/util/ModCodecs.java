@@ -8,6 +8,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
@@ -31,12 +32,20 @@ public class ModCodecs {
     public static final Codec<ItemStack> OPTIONAL_ITEMSTACK_UNCAPPED_SIZE = ExtraCodecs.<ItemStack>optionalEmptyMap(Codec.lazyInitialized(
             () -> RecordCodecBuilder.create(
                     instance -> instance.group(
-                            Item.CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder),
+                            // Item.CODEC.fieldOf("id").forGetter(ItemStack::getItem),
+                            Item.CODEC.fieldOf("id").forGetter(stack -> BuiltInRegistries.ITEM.wrapAsHolder(stack.getItem())),
                             ExtraCodecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
                             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(ItemStack::getComponentsPatch)
-                    ).apply(instance, ItemStack::new)
-            )
-    )).xmap(opt -> opt.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+                    ).apply(instance, (Holder<Item> itemHolder, Integer count, DataComponentPatch patch) -> {
+                        ItemStack stack = new ItemStack(itemHolder, count);
+                        stack.applyComponents(patch);
+                        return stack;
+                    })
+            ))
+    ).xmap(
+            opt -> opt.orElse(ItemStack.EMPTY),
+            stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack)
+    );
 
     /**
      * Short form block pos codec
@@ -69,7 +78,12 @@ public class ModCodecs {
                     DataComponentPatch.CODEC.fieldOf("patch").codec()
             ),
             BuiltInRegistries.ITEM.byNameCodec()
-    ).xmap(ModCodecs::decodeEitherItemStack, stack -> !stack.getComponentsPatch().isEmpty() ? Either.left(Pair.of(stack.getItem(), stack.getComponentsPatch())) : Either.right(stack.getItem()));
+    ).xmap(
+            ModCodecs::decodeEitherItemStack,
+            stack -> !stack.getComponentsPatch().isEmpty()
+                    ? Either.left(Pair.of(stack.getItem(), stack.getComponentsPatch()))
+                    : Either.right(stack.getItem())
+    );
 
     private static ItemStack decodeEitherItemStack(Either<Pair<Item, DataComponentPatch>, Item> either) {
         if (either.left().isPresent()) {

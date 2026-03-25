@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.screen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -32,14 +32,14 @@ public abstract class BaseUtilScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics, int i, int j, float f) {
-        super.renderBackground(graphics, i, j, f);
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int i, int j, float f) {
+        super.extractBackground(graphics, i, j, f);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.BACKGROUND_SPRITE, this.left, this.top, this.menuWidth, this.menuHeight);
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        graphics.drawString(Minecraft.getInstance().font, this.title, left + GuiConstants.MARGIN, this.top + GuiConstants.MARGIN, TextColours.getLabelColour(), false);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        graphics.text(Minecraft.getInstance().font, this.title, left + GuiConstants.MARGIN, this.top + GuiConstants.MARGIN, TextColours.getLabelColour(), false);
     }
 }

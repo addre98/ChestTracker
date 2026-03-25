@@ -133,7 +133,7 @@ public class DefaultProvider extends ServerProvider {
 
             if (itemComponent != null) {
                 // List<ItemStack> itemList = Streams.of(itemComponent.nonEmptyItemsCopy()).toList();
-                List<ItemStack> itemList = itemComponent.nonEmptyStream().toList();
+                List<ItemStack> itemList = itemComponent.nonEmptyItemCopyStream().toList();
                 if (!itemList.isEmpty()) items = itemList;
             }
 

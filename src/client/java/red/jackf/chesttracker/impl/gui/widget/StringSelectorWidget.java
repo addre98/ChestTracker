@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.impl.gui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -53,7 +53,7 @@ public class StringSelectorWidget<T> extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, GuiUtil.SEARCH_BAR_SPRITE, this.getX(), this.getY(), this.getWidth(), this.getHeight());
         int i = 0;
         var hoveredIndex = getHoveredIndex(mouseX, mouseY);
@@ -64,7 +64,7 @@ public class StringSelectorWidget<T> extends AbstractWidget {
             if (hovered) lastHovered = entry.getKey();
             var textColour = hovered ? TextColours.getSearchTermColour() : entry.getKey()
                     .equals(highlight) ? TextColours.getSearchKeyColour() : TextColours.getTextColour();
-            graphics.drawString(Minecraft.getInstance().font,
+            graphics.text(Minecraft.getInstance().font,
                     entry.getValue(),
                     this.getX() + 2 + (hovered ? 6 : 0),
                     this.getY() + 2 + ROW_HEIGHT * i,
