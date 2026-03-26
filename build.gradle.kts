@@ -189,16 +189,6 @@ dependencies {
     implementation("red.jackf:whereisit:${properties["where-is-it_version"]}")
     include("red.jackf:whereisit:${properties["where-is-it_version"]}")
 
-//    // JackFredLib
-//    implementation("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")
-//    implementation("red.jackf.jackfredlib:jackfredlib-base:${properties["jackfredlib_base_version"]}")
-//    implementation("red.jackf.jackfredlib:jackfredlib-gps:${properties["jackfredlib_gps_version"]}")
-//    implementation("red.jackf.jackfredlib:jackfredlib-toasts:${properties["jackfredlib_toasts_version"]}")
-//    include("red.jackf.jackfredlib:jackfredlib:${properties["jackfredlib_version"]}")
-//    include("red.jackf.jackfredlib:jackfredlib-base:${properties["jackfredlib_base_version"]}")
-//    include("red.jackf.jackfredlib:jackfredlib-gps:${properties["jackfredlib_gps_version"]}")
-//    include("red.jackf.jackfredlib:jackfredlib-toasts:${properties["jackfredlib_toasts_version"]}")
-
     // Config
     implementation("dev.isxander:yet-another-config-lib:${properties["yacl_version"]}") {
         exclude(group = "com.terraformersmc", module = "modmenu")
