@@ -44,7 +44,7 @@ public class CustomSearchablesFormatter implements ContextAwareVisitor<TokenRang
     public TokenRange visitGrouping(final GroupingExpression expr, final @NotNull FormattingContext context) {
 
         TokenRange leftRange = expr.left().accept(this, context);
-        //tokens.add(Pair.of(getAndPushRange(), context.style()));
+        tokens.add(Pair.of(getAndPushRange(), context.style()));
         TokenRange rightRange = expr.right().accept(this, context);
         return TokenRange.encompassing(leftRange, rightRange);
     }
@@ -52,28 +52,26 @@ public class CustomSearchablesFormatter implements ContextAwareVisitor<TokenRang
     @NotNull
     public TokenRange visitComponent(final ComponentExpression expr, final FormattingContext context) {
 
-        /*boolean valid = context.valid() && expr.left() instanceof LiteralExpression && expr.right() instanceof LiteralExpression;
+        boolean valid = context.valid() && expr.left() instanceof LiteralExpression && expr.right() instanceof LiteralExpression;
         TokenRange leftRange = expr.left()
                 .accept(this, FormattingContext.key(Style.EMPTY.withColor(TextColours.getSearchKeyColour()), valid));
         tokens.add(Pair.of(getAndPushRange(), context.style(valid)));
         TokenRange rightRange = expr.right()
                 .accept(this, FormattingContext.literal(Style.EMPTY.withColor(TextColours.getSearchTermColour()), valid));
-        return TokenRange.encompassing(leftRange, rightRange);*/
-        return null;
+        return TokenRange.encompassing(leftRange, rightRange);
     }
 
     @Override
     @NotNull
     public TokenRange visitLiteral(final @NotNull LiteralExpression expr, final FormattingContext context) {
 
-        /*Style style = context.style();
+        Style style = context.style();
         if (!context.valid() || context.isKey() && !type.components().containsKey(expr.value())) {
             style = Style.EMPTY.withColor(TextColours.getErrorColour()).withUnderlined(true);
         }
         TokenRange range = getAndPushRange(expr.displayValue().length());
         tokens.add(Pair.of(range, style));
-        return range;*/
-        return null;
+        return range;
     }
 
     @Override

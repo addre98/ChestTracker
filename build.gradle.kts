@@ -206,9 +206,9 @@ dependencies {
     compileOnly("com.blamejared.searchables:Searchables-fabric-${properties["searchables_version"]}") {
         exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
     }
-    //runtimeOnly("com.blamejared.searchables:Searchables-fabric-${properties["searchables_version"]}") {
-        //exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
-    //}
+    runtimeOnly("com.blamejared.searchables:Searchables-fabric-${properties["searchables_version"]}") {
+        exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
+    }
     if (isBundlingSearchables) include("com.blamejared.searchables:Searchables-fabric-${properties["searchables_version"]}")
 
     // Mod Menu
