@@ -234,7 +234,7 @@ dependencies {
     // Litematica
     //modCompileOnly("maven.modrinth:litematica:${properties["litematica_version"]}")
     //modCompileOnly("maven.modrinth:malilib:${properties["malilib_version"]}")
-    // compileOnly(fileTree("libs"))
+    compileOnly(fileTree("libs"))
 
     //runtimeOnly("maven.modrinth:litematica:${properties["litematica_version"]}")
     //runtimeOnly("maven.modrinth:malilib:${properties["malilib_version"]}")
@@ -260,7 +260,7 @@ tasks.jar {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"]!!)
+            from(components["java"])
 
             pom {
                 name = project.properties["mod_name"].toString()
@@ -353,7 +353,7 @@ if (canPublish) {
 
     val changelogTextProvider = if (generateChangelogTask != null) {
         provider {
-            generateChangelogTask!!.get().changelogFile.get().asFile.readText()
+            generateChangelogTask.get().changelogFile.get().asFile.readText()
         }
     } else {
         provider {

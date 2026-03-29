@@ -1,7 +1,7 @@
 package red.jackf.chesttracker.mixins.compat.litematica;
 
 import com.llamalad7.mixinextras.sugar.Local;
-/*import fi.dy.masa.litematica.gui.GuiMaterialList;
+import fi.dy.masa.litematica.gui.GuiMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetListMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetMaterialListEntry;
 import fi.dy.masa.litematica.materials.MaterialListBase;
@@ -9,14 +9,14 @@ import fi.dy.masa.litematica.materials.MaterialListEntry;
 import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.widgets.WidgetInfoIcon;
-import fi.dy.masa.malilib.util.StringUtils;*/
+import fi.dy.masa.malilib.util.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//import red.jackf.chesttracker.impl.compat.mods.litematica.ModIcon;
+import red.jackf.chesttracker.impl.compat.mods.litematica.ModIcon;
 import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 import red.jackf.whereisit.api.SearchRequest;
 import red.jackf.whereisit.api.criteria.builtin.AnyOfCriterion;
@@ -26,7 +26,7 @@ import red.jackf.whereisit.client.api.events.SearchRequestPopulator;
 /**
  * Adds a 'Search Missing' button to the top of the material list screen. Also adds an info button to the top right letting the user know
  */
-/*@Mixin(value = GuiMaterialList.class, remap = false)
+@Mixin(value = GuiMaterialList.class, remap = false)
 public abstract class GuiMaterialListMixin extends GuiListBase<MaterialListEntry, WidgetMaterialListEntry, WidgetListMaterialList> {
     @Shadow @Final private MaterialListBase materialList;
 
@@ -83,4 +83,3 @@ public abstract class GuiMaterialListMixin extends GuiListBase<MaterialListEntry
     }
 
 }
-*/

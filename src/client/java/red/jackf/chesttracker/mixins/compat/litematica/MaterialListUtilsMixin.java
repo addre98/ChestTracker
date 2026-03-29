@@ -3,8 +3,8 @@ package red.jackf.chesttracker.mixins.compat.litematica;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-/*import fi.dy.masa.litematica.materials.MaterialListUtils;
-import fi.dy.masa.malilib.util.ItemType;*/
+import fi.dy.masa.litematica.materials.MaterialListUtils;
+import fi.dy.masa.malilib.util.data.ItemType;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +21,7 @@ import red.jackf.chesttracker.impl.config.ChestTrackerConfig;
 /**
  * Adds the ender chest memories or the nearby container memories to the item count.
  */
-/*@Mixin(value = MaterialListUtils.class)
+@Mixin(value = MaterialListUtils.class)
 public abstract class MaterialListUtilsMixin {
 
     @WrapOperation(method = {"updateAvailableCounts", "getMaterialList"},
@@ -52,4 +52,3 @@ public abstract class MaterialListUtilsMixin {
         return inventoryStacks;
     }
 }
-*/
