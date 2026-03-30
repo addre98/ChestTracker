@@ -416,7 +416,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("modmenu", "wthit", "jade").forEach {
+                    listOf("modmenu", "shulkerboxtooltip", "wthit", "jade").forEach {
                         optional {
                             slug.set(it)
                         }
@@ -452,7 +452,7 @@ if (canPublish) {
                             slug.set(it)
                         }
                     }
-                    listOf("modmenu", "wthit", "jade").forEach {
+                    listOf("modmenu", "shulkerboxtooltip", "wthit", "jade").forEach {
                         optional {
                             slug.set(it)
                         }
