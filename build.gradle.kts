@@ -218,7 +218,7 @@ dependencies {
     // Shulker Box Tooltip
     compileOnly("com.misterpemodder:shulkerboxtooltip-fabric:${properties["shulkerboxtooltip_version"]}")
 
-    runtimeOnly("com.misterpemodder:shulkerboxtooltip-fabric:${properties["shulkerboxtooltip_version"]}")
+    //runtimeOnly("com.misterpemodder:shulkerboxtooltip-fabric:${properties["shulkerboxtooltip_version"]}")
     //runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${properties["clothconfig_version"]}")
 
     // WTHIT
