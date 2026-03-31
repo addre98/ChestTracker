@@ -213,7 +213,7 @@ dependencies {
 
     // Mod Menu
     compileOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
-    runtimeOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
+    localRuntime("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
 
     // Shulker Box Tooltip
     compileOnly("com.misterpemodder:shulkerboxtooltip-fabric:${properties["shulkerboxtooltip_version"]}")
@@ -229,7 +229,7 @@ dependencies {
 
     // Jade
     compileOnly("maven.modrinth:jade:${properties["jade_version"]}")
-    runtimeOnly("maven.modrinth:jade:${properties["jade_version"]}")
+    localRuntime("maven.modrinth:jade:${properties["jade_version"]}")
 
     // Litematica
     //modCompileOnly("maven.modrinth:litematica:${properties["litematica_version"]}")
