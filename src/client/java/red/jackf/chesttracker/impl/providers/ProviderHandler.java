@@ -49,8 +49,11 @@ public class ProviderHandler {
     }
 
     private void unload() {
-        if (this.currentProvider == null) return;
-        this.currentProvider.onDisconnect();
+        ServerProvider previousProvider = this.currentProvider;
+        this.currentProvider = null;
+        if (previousProvider != null) {
+            previousProvider.onDisconnect();
+        }
         MemoryBankAccessImpl.INSTANCE.unload();
     }
 
@@ -74,7 +77,7 @@ public class ProviderHandler {
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             this.lastCoordinate = null;
-            client.execute(this::unload);
+            this.unload();
         });
 
         AfterPlayerPlaceBlock.EVENT.register((clientLevel, pos, state, placementStack) ->
