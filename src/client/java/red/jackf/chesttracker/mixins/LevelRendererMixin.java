@@ -1,15 +1,14 @@
 package red.jackf.chesttracker.mixins;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,11 +27,9 @@ public class LevelRendererMixin {
             DeltaTracker tracker,
             boolean renderBlockOutline,
             Camera cam,
+            GameRenderer gameRenderer,
             Matrix4f frustumMatrix,
             Matrix4f projectionMatrix,
-            GpuBufferSlice fogBuffer,
-            Vector4f fogColor,
-            boolean renderSky,
             CallbackInfo ci) {
 
         // Planning the tags

@@ -1,6 +1,5 @@
 package red.jackf.chesttracker.impl.compat.mods.jade;
 
-import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +14,8 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.JadeIds;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.theme.IThemeHelper;
-import snownee.jade.api.ui.JadeUI;
+import snownee.jade.api.ui.IElement;
+import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.api.ui.ScreenDirection;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class JadeClientContentsPreview implements IBlockComponentProvider {
-    public static final JadeClientContentsPreview INSTANCE = new JadeClientContentsPreview();
+    public static JadeClientContentsPreview INSTANCE = new JadeClientContentsPreview();
     private JadeClientContentsPreview() {}
 
     public static final ResourceLocation ID = ChestTracker.id("memory_preview");
@@ -31,39 +31,34 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
     private static void possiblyAddItems(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config, Memory memory) {
         if (config.get(JadeIds.UNIVERSAL_ITEM_STORAGE) &&
                 (accessor.getServerData().contains("JadeItemStorage") // < 15.8.0
-                        || accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString()))) // >= 15.8.0
-            return;
-
+                        || accessor.getServerData().contains(JadeIds.UNIVERSAL_ITEM_STORAGE.toString())) // >= 15.8.0
+        )
+            return; // don't do it if jade is handling it
         if (config.get(JadeIds.MC_FURNACE)
                 && accessor.getBlock() instanceof AbstractFurnaceBlock &&
                 (accessor.getServerData().contains("furnace") // < 15.7.0
                         || accessor.getServerData().contains(JadeIds.MC_FURNACE.toString()))) // >=15.7.0
-            return;
+            return; // don't do furnaces if handled so progress still shows
 
         var stacks = ItemStacks.flattenStacks(memory.items(), true);
 
         int max = config.getInt(accessor.showDetails() ? JadeIds.UNIVERSAL_ITEM_STORAGE_DETAILED_AMOUNT : JadeIds.UNIVERSAL_ITEM_STORAGE_NORMAL_AMOUNT);
         int perLine = config.getInt(JadeIds.UNIVERSAL_ITEM_STORAGE_ITEMS_PER_LINE);
 
-        List<List<LayoutElement>> lines = new ArrayList<>();
-        List<LayoutElement> currentLine = new ArrayList<>(perLine);
-
+        List<List<IElement>> lines = new ArrayList<>();
+        List<IElement> currentLine = new ArrayList<>(perLine);
         for (int i = 0; i < max && i < stacks.size(); i++) {
             ItemStack item = stacks.get(i);
-            currentLine.add(JadeUI.item(item));
+            currentLine.add(IElementHelper.get().item(item));
             if (currentLine.size() == perLine) {
                 lines.add(currentLine);
                 currentLine = new ArrayList<>(perLine);
             }
         }
-
         if (!currentLine.isEmpty()) lines.add(currentLine);
-
-        System.out.println("re");
-
-        for (List<LayoutElement> line : lines) {
-            tooltip.add(line);
-            tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
+        for (int i = 0; i < lines.size(); i++) {
+            tooltip.add(lines.get(i));
+            if (i < lines.size() - 1) tooltip.setLineMargin(-1, ScreenDirection.DOWN, -1);
         }
     }
 
@@ -72,6 +67,8 @@ public class JadeClientContentsPreview implements IBlockComponentProvider {
         MemoryBankAccess.INSTANCE.getLoaded().ifPresent(bank -> {
             Optional<Memory> memory = bank.getMemory(accessor.getLevel(), accessor.getPosition());
             if (memory.isEmpty()) return;
+
+            // items
             possiblyAddItems(tooltip, accessor, config, memory.get());
 
             Component name = memory.get().renderName();

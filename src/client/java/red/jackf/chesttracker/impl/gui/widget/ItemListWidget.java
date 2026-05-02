@@ -7,9 +7,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -26,8 +26,7 @@ import red.jackf.whereisit.client.api.events.SearchRequestPopulator;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class ItemListWidget extends AbstractWidget {
     private static final ResourceLocation BACKGROUND_SPRITE = GuiUtil.sprite("widgets/slot_background");
@@ -39,7 +38,8 @@ public class ItemListWidget extends AbstractWidget {
     private int offset = 0;
     private boolean hideTooltip;
     private boolean hasTooltip = false;
-    private List<ClientTooltipComponent> pendingTooltip = Collections.emptyList();
+    private List<Component> pendingTooltip = Collections.emptyList();
+    private Optional<TooltipComponent> pendingTooltipImage = Optional.empty();
     private int pendingTooltipX = 0;
     private int pendingTooltipY = 0;
 
@@ -91,7 +91,8 @@ public class ItemListWidget extends AbstractWidget {
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         this.hasTooltip = false;
         this.pendingTooltip = Collections.emptyList();
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, getWidth(), getHeight(), 0, 0, getX(), getY(), getWidth(), getHeight()); // background
+        this.pendingTooltipImage = Optional.empty();
+        graphics.blitSprite(RenderType::guiTextured, BACKGROUND_SPRITE, getWidth(), getHeight(), 0, 0, getX(), getY(), getWidth(), getHeight()); // background
         this.renderItems(graphics); // item models
         this.renderItemDecorations(graphics); // stack size and durability
         this.renderAdditional(graphics, mouseX, mouseY); // tooltips
@@ -127,10 +128,10 @@ public class ItemListWidget extends AbstractWidget {
             int offset = -GuiConstants.GRID_SLOT_SIZE + 2;
 
             // move to correct slot on screen
-            graphics.pose().pushMatrix();
+            graphics.pose().pushPose();
             int bottomRightX = this.getX() + GuiConstants.GRID_SLOT_SIZE * ((i % gridWidth) + 1);
             int bottomRightY = this.getY() + GuiConstants.GRID_SLOT_SIZE * ((i / gridWidth) + 1);
-            graphics.pose().translate(bottomRightX - 1, bottomRightY - 1);
+            graphics.pose().translate(bottomRightX - 1, bottomRightY - 1, 0);
 
             // durability, scaled normally
             graphics.renderItemDecorations(Minecraft.getInstance().font, item, offset, offset, "");
@@ -140,12 +141,12 @@ public class ItemListWidget extends AbstractWidget {
             int textScale = scales.getFirst();
             int guiScale = scales.getSecond();
             float scaleFactor = (float) textScale / guiScale;
-            graphics.pose().scale(scaleFactor, scaleFactor);
+            graphics.pose().scale(scaleFactor, scaleFactor, 1f);
 
             // render count text scaled down
             String text = Strings.magnitude(item.getCount(), 0);
             graphics.renderItemDecorations(Minecraft.getInstance().font, DUMMY_ITEM_FOR_COUNT, offset, offset, text);
-            graphics.pose().popMatrix();
+            graphics.pose().popPose();
         }
     }
 
@@ -167,24 +168,12 @@ public class ItemListWidget extends AbstractWidget {
                 lines.add(Component.literal(Strings.commaSeparated(stack.getCount()))
                         .withStyle(ChatFormatting.GREEN));
             }
-            var image = stack.getTooltipImage();
-            List<ClientTooltipComponent> components = lines.stream()
-                    .map(Component::getVisualOrderText)
-                    .filter(Objects::nonNull)
-                    .map(ClientTooltipComponent::create)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            Optional<TooltipComponent> image = stack.getTooltipImage();
 
-            image.ifPresent(img -> {
-                ClientTooltipComponent imgComponent = ClientTooltipComponent.create(img);
-                if (imgComponent != null) {
-                    components.add(0, imgComponent);
-                }
-            });
-
-            if (!components.isEmpty()) {
+            if (!lines.isEmpty() || image.isPresent()) {
                 this.hasTooltip = true;
-                this.pendingTooltip = components;
+                this.pendingTooltip = lines;
+                this.pendingTooltipImage = image;
                 this.pendingTooltipX = mouseX;
                 this.pendingTooltipY = mouseY + 12;
             }
@@ -192,14 +181,13 @@ public class ItemListWidget extends AbstractWidget {
     }
 
     public void renderTooltip(GuiGraphics graphics) {
-        if (!this.hasTooltip || this.pendingTooltip.isEmpty()) return;
+        if (!this.hasTooltip || (this.pendingTooltip.isEmpty() && this.pendingTooltipImage.isEmpty())) return;
         graphics.renderTooltip(
                 Minecraft.getInstance().font,
                 this.pendingTooltip,
+                this.pendingTooltipImage,
                 this.pendingTooltipX,
-                this.pendingTooltipY,
-                DefaultTooltipPositioner.INSTANCE,
-                null
+                this.pendingTooltipY
         );
     }
 

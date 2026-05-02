@@ -6,7 +6,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -51,7 +50,7 @@ public class SecondaryButton extends AbstractWidget {
         int x = Mth.lerpDiscrete(factor, this.startX - 1, this.getX() - 1);
         int y = Mth.lerpDiscrete(factor, this.startY - 1, this.getY() - 1);
 
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, x, y, InventoryButton.IMAGE_SIZE, InventoryButton.IMAGE_SIZE);
+        graphics.blitSprite(RenderType::guiTextured, texture, x, y, InventoryButton.IMAGE_SIZE, InventoryButton.IMAGE_SIZE);
     }
 
     @Override

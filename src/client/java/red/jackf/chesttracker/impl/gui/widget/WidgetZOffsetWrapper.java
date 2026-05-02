@@ -22,10 +22,10 @@ public class WidgetZOffsetWrapper<T extends AbstractWidget> extends AbstractWidg
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushMatrix(); // 2D equivalent of pushPose()
-        guiGraphics.pose().translate(0.0f, 0.0f); // only X and Y; no Z in Matrix3x2fStack
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0.0f, 0.0f, zOffset);
         ((AbstractWidgetAccessor) baseWidget).renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popMatrix(); // 2D equivalent of popPose()
+        guiGraphics.pose().popPose();
     }
 
     @Override
