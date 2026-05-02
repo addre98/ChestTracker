@@ -84,6 +84,7 @@ public class InventoryButton extends AbstractWidget {
 
                     this.secondaryButtons.add(new RememberContainerButton(bank, location));
                     this.secondaryButtons.add(new RenameButton(parent, bank, location));
+                    this.secondaryButtons.add(new BlockLabelButton(bank, location));
                 }
             }
         }
