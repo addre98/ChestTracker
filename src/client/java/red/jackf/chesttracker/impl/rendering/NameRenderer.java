@@ -27,6 +27,7 @@ import red.jackf.whereisit.config.WhereIsItConfig;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +73,7 @@ public class NameRenderer {
                 if (alreadyRendering.contains(entry.getKey())) continue;
                 if (entry.getKey().distToCenterSqr(MC.player.position()) < maxRangeSq) {
                     Component name = entry.getValue().renderName();
-                    if (name != null) {
+                    if (name != null && !isBlockedLabel(name)) {
                         Vec3 pos = entry.getValue().getCenterPosition().add(0, 1, 0);
                         scheduledLabels.add(new ScheduledLabel(pos, name, false));
                     }
@@ -82,11 +83,32 @@ public class NameRenderer {
 
         if (focused != null) {
             Component name = focused.renderName();
-            if (name != null) {
+            if (name != null && !isBlockedLabel(name)) {
                 Vec3 pos = focused.getCenterPosition().add(0, 1, 0);
                 scheduledLabels.add(new ScheduledLabel(pos, name, true));
             }
         }
+    }
+
+    private static boolean isBlockedLabel(Component name) {
+        String normalizedName = normalizeLabelText(name.getString());
+        if (normalizedName.isEmpty()) return false;
+
+        List<String> blocked = WhereIsItConfig.INSTANCE.instance().getClient().blockedContainerLabelNames;
+        if (blocked == null || blocked.isEmpty()) return false;
+
+        for (String blockedName : blocked) {
+            if (normalizedName.equals(normalizeLabelText(blockedName))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String normalizeLabelText(@Nullable String value) {
+        if (value == null) return "";
+        return value.trim().toLowerCase(Locale.ROOT);
     }
 
     public static boolean hasScheduledLabels() {
