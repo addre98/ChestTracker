@@ -52,6 +52,21 @@ public class ServuxContainerSync {
     private int totalContainers = 0;
     private int processedContainers = 0;
     private long syncStartTime = 0;
+
+    // --- perf timing fields ---
+    private long scanStartTimeNanos = 0;
+    private long scanEndTimeNanos = 0;
+    private long dispatchStartWallTime = 0;
+    private long firstResponseWallTime = 0;
+    private long lastResponseWallTime = 0;
+    private final Map<BlockPos, Long> requestSendWallTimes = new HashMap<>();
+    private int chunksScanned = 0;
+    private int blockEntitiesChecked = 0;
+    private long cumulativeNbtParseNanos = 0;
+    private long cumulativeBuildInventoryNanos = 0;
+    private long cumulativeConnectedBlocksNanos = 0;
+    private int saveCount = 0;
+    private int emptyResponseCount = 0;
     
     private final ExecutorService scanExecutor = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "ChestTracker-ServuxScanner");
@@ -276,10 +291,14 @@ public class ServuxContainerSync {
 
     private List<BlockPos> scanContainers(Level world, MemoryBankImpl memoryBank) {
         ChestTracker.LOGGER.info("ServuxContainerSync: Starting container scan");
+        long t0 = System.nanoTime();
+        scanStartTimeNanos = t0;
         int syncRange = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncRange;
         BlockPos playerPos = mc.player.blockPosition();
         List<BlockPos> containerPositions = new ArrayList<>();
         Set<BlockPos> processedPositions = new HashSet<>();
+        int localChunksScanned = 0;
+        int localBeChecked = 0;
 
         var filteringSettings = memoryBank.getMetadata().getFilteringSettings();
         var rememberedContainers = filteringSettings.rememberedContainers;
@@ -292,17 +311,19 @@ public class ServuxContainerSync {
             for (int dz = -chunkRange; dz <= chunkRange; dz++) {
                 int chunkX = playerChunkX + dx;
                 int chunkZ = playerChunkZ + dz;
-                
+
                 if (!world.hasChunk(chunkX, chunkZ)) {
                     continue;
                 }
 
+                localChunksScanned++;
                 var chunk = world.getChunk(chunkX, chunkZ);
                 var blockEntities = chunk.getBlockEntities();
 
                 for (var entry : blockEntities.entrySet()) {
                     BlockPos pos = entry.getKey();
-                    
+                    localBeChecked++;
+
                     if (processedPositions.contains(pos)) {
                         continue;
                     }
@@ -328,8 +349,13 @@ public class ServuxContainerSync {
                 }
             }
         }
-        
-        ChestTracker.LOGGER.info("ServuxContainerSync: Scan complete, found {} containers", containerPositions.size());
+
+        chunksScanned = localChunksScanned;
+        blockEntitiesChecked = localBeChecked;
+        scanEndTimeNanos = System.nanoTime();
+        long scanMs = (scanEndTimeNanos - t0) / 1_000_000;
+        ChestTracker.LOGGER.info("ServuxContainerSync: Scan complete. chunks={}, blockEntities={}, containers={}, scanTime={}ms",
+                localChunksScanned, localBeChecked, containerPositions.size(), scanMs);
         return containerPositions;
     }
 
@@ -365,11 +391,17 @@ public class ServuxContainerSync {
         int requestsPerTick = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncRequestRate;
         int sent = 0;
 
+        if (dispatchStartWallTime == 0) {
+            dispatchStartWallTime = System.currentTimeMillis();
+        }
+
+        long now = System.currentTimeMillis();
         Iterator<BlockPos> iterator = pendingRequests.iterator();
         while (iterator.hasNext() && sent < requestsPerTick) {
             BlockPos pos = iterator.next();
             iterator.remove();
-            
+            requestSendWallTimes.put(pos, now);
+
             if (miniHudExists && miniHudEntitiesDataManager != null) {
                 try {
                     java.lang.reflect.Method requestMethod = miniHudEntitiesDataManager.getClass()
@@ -399,12 +431,21 @@ public class ServuxContainerSync {
             return;
         }
 
+        long now = System.currentTimeMillis();
+        Long sendTime = requestSendWallTimes.remove(pos);
+        if (sendTime != null) {
+            long latency = now - sendTime;
+            if (firstResponseWallTime == 0) firstResponseWallTime = now;
+            lastResponseWallTime = now;
+        }
+
         if (nbt != null && nbt.contains("Items")) {
             receivedData.put(pos, nbt);
             processedContainers++;
             saveContainerToMemory(pos, nbt);
         } else {
             processedContainers++;
+            if (nbt == null || !nbt.contains("Items")) emptyResponseCount++;
         }
 
         if (processedContainers >= totalContainers && pendingRequests.isEmpty()) {
@@ -424,13 +465,17 @@ public class ServuxContainerSync {
         }
 
         try {
+            long tNbtStart = System.nanoTime();
             CompoundData compoundData = DataConverterNbt.fromVanillaCompound(nbt);
             Container container = InventoryUtils.getDataInventory(compoundData, -1, mc.level.registryAccess());
-            
+            long tNbtEnd = System.nanoTime();
+            cumulativeNbtParseNanos += (tNbtEnd - tNbtStart);
+
             if (container == null) {
                 return;
             }
 
+            long tInvStart = System.nanoTime();
             List<ItemStack> items = new ArrayList<>();
             for (int i = 0; i < container.getContainerSize(); i++) {
                 ItemStack stack = container.getItem(i);
@@ -438,6 +483,8 @@ public class ServuxContainerSync {
                     items.add(stack);
                 }
             }
+            long tInvEnd = System.nanoTime();
+            cumulativeBuildInventoryNanos += (tInvEnd - tInvStart);
 
             if (items.isEmpty()) {
                 return;
@@ -448,7 +495,11 @@ public class ServuxContainerSync {
                 .withCustomName(null)
                 .inContainer(blockState.getBlock());
 
+            long tConnStart = System.nanoTime();
             List<BlockPos> connected = ConnectedBlocksGrabber.getConnected(mc.level, blockState, pos);
+            long tConnEnd = System.nanoTime();
+            cumulativeConnectedBlocksNanos += (tConnEnd - tConnStart);
+
             if (connected.size() > 1) {
                 BlockPos rootPos = connected.get(0);
                 List<BlockPos> otherPositions = connected.stream()
@@ -459,6 +510,7 @@ public class ServuxContainerSync {
 
             var result = memoryBuilder.toResult(currentKey.get(), pos);
             memoryBank.addMemory(result.key(), result.position(), result.memory());
+            saveCount++;
 
         } catch (Exception e) {
             ChestTracker.LOGGER.error("ServuxContainerSync: error saving container at {}", pos, e);
@@ -466,8 +518,51 @@ public class ServuxContainerSync {
     }
 
     private void finishSync() {
+        long totalWallMs = System.currentTimeMillis() - syncStartTime;
         int savedCount = receivedData.size();
-        ChestTracker.LOGGER.info("ServuxContainerSync: sync completed, saved {} containers", savedCount);
+        long scanMs = (scanEndTimeNanos - scanStartTimeNanos) / 1_000_000;
+
+        // dispatch phase: first request sent → last response received
+        long dispatchMs = (lastResponseWallTime > 0 && dispatchStartWallTime > 0)
+                ? lastResponseWallTime - dispatchStartWallTime : 0;
+
+        // waiting gap: scan complete → first request sent
+        long scanToFirstRequestMs = (dispatchStartWallTime > 0)
+                ? dispatchStartWallTime - syncStartTime - scanMs : 0;
+
+        // server turnaround: first request sent → first response
+        long firstResponseLatencyMs = (firstResponseWallTime > 0 && dispatchStartWallTime > 0)
+                ? firstResponseWallTime - dispatchStartWallTime : 0;
+
+        double containersPerSecond = totalWallMs > 0 ? processedContainers * 1000.0 / totalWallMs : 0;
+        double nbtMsPerContainer = processedContainers > 0 ? cumulativeNbtParseNanos / 1_000_000.0 / processedContainers : 0;
+        double invMsPerContainer = processedContainers > 0 ? cumulativeBuildInventoryNanos / 1_000_000.0 / processedContainers : 0;
+        double connMsPerContainer = processedContainers > 0 ? cumulativeConnectedBlocksNanos / 1_000_000.0 / processedContainers : 0;
+        int rate = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncRequestRate;
+        int range = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncRange;
+        int timeout = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncTimeout;
+
+        // --- LOG REPORT ---
+        ChestTracker.LOGGER.info("═══════════════════════════════════════════════");
+        ChestTracker.LOGGER.info("Servux Sync Performance Report");
+        ChestTracker.LOGGER.info("───────────────────────────────────────────────");
+        ChestTracker.LOGGER.info("  Scanned   : {} chunks / {} block entities", chunksScanned, blockEntitiesChecked);
+        ChestTracker.LOGGER.info("  Containers: {} found / {} saved / {} empty", totalContainers, savedCount, emptyResponseCount);
+        ChestTracker.LOGGER.info("  Requests  : {} sent (rate: {}/tick)", processedContainers, rate);
+        ChestTracker.LOGGER.info("  Settings  : range={} blocks, timeout={}s", range, timeout);
+        ChestTracker.LOGGER.info("───────────────────────────────────────────────");
+        ChestTracker.LOGGER.info("  [1] Scan                 : {} ms", String.format("%6d", scanMs));
+        ChestTracker.LOGGER.info("  [2] Scan->Dispatch gap   : {} ms", String.format("%6d", scanToFirstRequestMs));
+        ChestTracker.LOGGER.info("  [3] Dispatch (send+wait) : {} ms  (first response in {} ms)",
+                String.format("%6d", dispatchMs), String.format("%5d", firstResponseLatencyMs));
+        ChestTracker.LOGGER.info("  [4] Save per container (avg): NBT={}ms  Inventory={}ms  Connected={}ms",
+                String.format("%.2f", nbtMsPerContainer), String.format("%.2f", invMsPerContainer),
+                String.format("%.2f", connMsPerContainer));
+        ChestTracker.LOGGER.info("───────────────────────────────────────────────");
+        ChestTracker.LOGGER.info("  TOTAL wall clock  : {} ms", totalWallMs);
+        ChestTracker.LOGGER.info("  TOTAL containers/s: {}", String.format("%.1f", containersPerSecond));
+        ChestTracker.LOGGER.info("═══════════════════════════════════════════════");
+
         sendChatMessage(Component.translatable("chesttracker.servux.syncComplete", savedCount, totalContainers));
         resetSync();
     }
@@ -483,6 +578,20 @@ public class ServuxContainerSync {
         totalContainers = 0;
         processedContainers = 0;
         syncStartTime = 0;
+        // perf fields
+        scanStartTimeNanos = 0;
+        scanEndTimeNanos = 0;
+        dispatchStartWallTime = 0;
+        firstResponseWallTime = 0;
+        lastResponseWallTime = 0;
+        requestSendWallTimes.clear();
+        chunksScanned = 0;
+        blockEntitiesChecked = 0;
+        cumulativeNbtParseNanos = 0;
+        cumulativeBuildInventoryNanos = 0;
+        cumulativeConnectedBlocksNanos = 0;
+        saveCount = 0;
+        emptyResponseCount = 0;
     }
 
     public void updateActionBarProgress() {
