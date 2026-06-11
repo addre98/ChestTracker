@@ -1,0 +1,144 @@
+name: Manual Build & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
+        default: '26.1.2'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: "Log: workflow start"
+        run: |
+          echo "============================================"
+          echo " Manual Build & Release"
+          echo "============================================"
+          echo " Triggered by : ${{ github.actor }}"
+          echo " Branch       : ${{ inputs.branch }}"
+          echo " Repository   : ${{ github.repository }}"
+          echo " Run ID       : ${{ github.run_id }}"
+          echo "============================================"
+
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: "Log: checkout info"
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "Checked out commit: $SHORT_SHA ($(git rev-parse HEAD))"
+          echo "Commit message:     $(git log -1 --pretty=%s)"
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+        id: checkout_info
+
+      - name: "Setup JDK 25"
+        uses: actions/setup-java@v4
+        with:
+          java-version: 25
+          distribution: 'temurin'
+
+      - name: "Log: Java version"
+        run: java -version
+
+      - name: "Setup Gradle"
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-includes: |
+            caches
+            notifications
+            loom-cache
+
+      - name: "Make gradlew executable"
+        run: chmod +x ./gradlew
+
+      - name: "Log: read version info"
+        run: |
+          echo "mod_version:      $(grep '^mod_version=' gradle.properties | cut -d= -f2)"
+          echo "minecraft_version: $(grep '^minecraft_version=' gradle.properties | cut -d= -f2)"
+
+      - name: "Build"
+        run: ./gradlew build --info
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Log: build artifacts"
+        run: |
+          echo "Build output:"
+          ls -la build/libs/ || echo "  (no artifacts found)"
+
+      - name: "Determine release tag"
+        id: tag
+        run: |
+          MOD_VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          MC_VERSION=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          TAG="v${MOD_VERSION}+${MC_VERSION}-${SHORT_SHA}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Generated release tag: $TAG"
+
+      - name: "Log: check existing tags"
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "WARNING: Tag $TAG already exists, release will be updated"
+          else
+            echo "Tag $TAG is new"
+          fi
+
+      - name: "Create tag"
+        id: create_tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = '${{ steps.tag.outputs.tag }}';
+            const sha = context.sha;
+            try {
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${tag}`,
+                sha: sha,
+              });
+              console.log(`Created tag ${tag} at ${sha}`);
+            } catch (e) {
+              if (e.status === 422) {
+                console.log(`Tag ${tag} already exists, proceeding with release`);
+              } else {
+                throw e;
+              }
+            }
+
+      - name: "Create GitHub Release"
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "Chest Tracker ${{ steps.tag.outputs.tag }}"
+          body: |
+            ## Manual Build
+
+            - **Branch**: `${{ inputs.branch }}`
+            - **Commit**: `${{ steps.checkout_info.outputs.short_sha }}`
+            - **Triggered by**: @${{ github.actor }}
+
+            Built from `${{ inputs.branch }}` branch via manual workflow dispatch.
+          files: build/libs/*.jar
+          fail_on_unmatched_files: true
+
+      - name: "Log: done"
+        run: |
+          echo "============================================"
+          echo " Release created: ${{ steps.tag.outputs.tag }}"
+          echo " See: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}"
+          echo "============================================"
