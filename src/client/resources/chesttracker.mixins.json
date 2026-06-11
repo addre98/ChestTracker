@@ -16,6 +16,7 @@
     "compat.litematica.GuiMaterialListMixin",
     "compat.litematica.MaterialListUtilsMixin",
     "compat.litematica.WidgetMaterialListEntryMixin",
+    "compat.minihud.ServuxEntitiesHandlerMixin",
     "datafix.V1460Mixin",
     "LevelRendererMixin"
   ],
