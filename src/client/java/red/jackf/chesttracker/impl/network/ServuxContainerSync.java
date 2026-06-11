@@ -568,7 +568,8 @@ public class ServuxContainerSync {
     }
 
     private long getSyncTimeoutMs() {
-        return ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncTimeout * 1000L;
+        int seconds = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncTimeout;
+        return seconds <= 0 ? Long.MAX_VALUE : seconds * 1000L;
     }
 
     private void resetSync() {

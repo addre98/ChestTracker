@@ -329,9 +329,11 @@ public class ChestTrackerConfigScreenBuilder {
                         .name(translatable("chesttracker.config.rendering.servuxSyncTimeout"))
                         .description(OptionDescription.of(translatable("chesttracker.config.rendering.servuxSyncTimeout.description")))
                         .controller(opt -> IntegerSliderControllerBuilder.create(opt)
-                                .range(5, 120)
+                                .range(0, 300)
                                 .step(5)
-                                .formatValue(i -> translatable("chesttracker.generic.seconds", i)))
+                                .formatValue(i -> i == 0
+                                        ? translatable("chesttracker.generic.unlimited")
+                                        : translatable("chesttracker.generic.seconds", i)))
                         .binding(
                                 instance.defaults().rendering.servuxSyncTimeout,
                                 () -> instance.instance().rendering.servuxSyncTimeout,
