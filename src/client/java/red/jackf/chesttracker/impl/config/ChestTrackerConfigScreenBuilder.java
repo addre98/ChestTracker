@@ -313,6 +313,18 @@ public class ChestTrackerConfigScreenBuilder {
                                 () -> instance.instance().rendering.nameRange,
                                 i -> instance.instance().rendering.nameRange = i
                         ).build())
+                .option(Option.<Integer>createBuilder()
+                        .name(translatable("chesttracker.config.rendering.servuxSyncRange"))
+                        .description(OptionDescription.of(translatable("chesttracker.config.rendering.servuxSyncRange.description")))
+                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                .range(16, 256)
+                                .step(16)
+                                .formatValue(i -> translatable("chesttracker.generic.blocks", i)))
+                        .binding(
+                                instance.defaults().rendering.servuxSyncRange,
+                                () -> instance.instance().rendering.servuxSyncRange,
+                                i -> instance.instance().rendering.servuxSyncRange = i
+                        ).build())
                 .option(Option.<Boolean>createBuilder()
                         .name(translatable("chesttracker.config.dev.disableContainerNames"))
                         .controller(opt -> BooleanControllerBuilder.create(opt)

@@ -29,6 +29,7 @@ import red.jackf.chesttracker.impl.gui.util.TextColours;
 import red.jackf.chesttracker.impl.gui.widget.*;
 import red.jackf.chesttracker.impl.memory.MemoryBankAccessImpl;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
+import red.jackf.chesttracker.impl.network.ServuxContainerSync;
 import red.jackf.chesttracker.impl.util.GuiUtil;
 import red.jackf.chesttracker.impl.util.ItemStacks;
 import red.jackf.chesttracker.impl.util.Misc;
@@ -204,6 +205,16 @@ public class ChestTrackerScreen extends Screen {
                         CommonComponents.EMPTY,
                         this::cycleContainerFilter))
                 .setTooltip(this.getContainerFilterTooltip());
+
+        // sync containers from Servux
+        this.addRenderableWidget(new ImageButton(
+                        this.left + this.menuWidth - 7 * (3 + BUTTON_SIZE),
+                        this.top + GuiConstants.SMALL_MARGIN,
+                        BUTTON_SIZE,
+                        BUTTON_SIZE,
+                        GuiUtil.twoSprite("sync_containers/button"),
+                        this::syncContainersFromServux))
+                .setTooltip(Tooltip.create(translatable("chesttracker.gui.syncContainers")));
 
         // item sort
         this.addRenderableWidget(new ChangeableImageButton(
@@ -466,6 +477,10 @@ public class ChestTrackerScreen extends Screen {
                     bank.getId()
             ));
         });
+    }
+
+    private void syncContainersFromServux(Button button) {
+        ServuxContainerSync.getInstance().startSync();
     }
 
     public enum ContainerFilter {
