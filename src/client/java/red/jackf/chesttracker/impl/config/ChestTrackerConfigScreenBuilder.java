@@ -325,6 +325,30 @@ public class ChestTrackerConfigScreenBuilder {
                                 () -> instance.instance().rendering.servuxSyncRange,
                                 i -> instance.instance().rendering.servuxSyncRange = i
                         ).build())
+                .option(Option.<Integer>createBuilder()
+                        .name(translatable("chesttracker.config.rendering.servuxSyncTimeout"))
+                        .description(OptionDescription.of(translatable("chesttracker.config.rendering.servuxSyncTimeout.description")))
+                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                .range(5, 120)
+                                .step(5)
+                                .formatValue(i -> translatable("chesttracker.generic.seconds", i)))
+                        .binding(
+                                instance.defaults().rendering.servuxSyncTimeout,
+                                () -> instance.instance().rendering.servuxSyncTimeout,
+                                i -> instance.instance().rendering.servuxSyncTimeout = i
+                        ).build())
+                .option(Option.<Integer>createBuilder()
+                        .name(translatable("chesttracker.config.rendering.servuxSyncRequestRate"))
+                        .description(OptionDescription.of(translatable("chesttracker.config.rendering.servuxSyncRequestRate.description")))
+                        .controller(opt -> IntegerSliderControllerBuilder.create(opt)
+                                .range(1, 50)
+                                .step(1)
+                                .formatValue(i -> translatable("chesttracker.generic.rate", i)))
+                        .binding(
+                                instance.defaults().rendering.servuxSyncRequestRate,
+                                () -> instance.instance().rendering.servuxSyncRequestRate,
+                                i -> instance.instance().rendering.servuxSyncRequestRate = i
+                        ).build())
                 .option(Option.<Boolean>createBuilder()
                         .name(translatable("chesttracker.config.dev.disableContainerNames"))
                         .controller(opt -> BooleanControllerBuilder.create(opt)

@@ -103,6 +103,12 @@ public class ChestTrackerConfig {
 
         @SerialEntry(comment = "Servux Container Sync Range. Range: [16, 256] blocks")
         public int servuxSyncRange = 64;
+
+        @SerialEntry(comment = "Servux Sync Timeout in seconds. Range: [5, 120] seconds")
+        public int servuxSyncTimeout = 30;
+
+        @SerialEntry(comment = "Servux Sync Request Rate (requests per tick). Range: [1, 50]")
+        public int servuxSyncRequestRate = 10;
     }
 
     public static class Debug {
@@ -157,6 +163,8 @@ public class ChestTrackerConfig {
         this.gui.itemListTextScale = Mth.clamp(this.gui.itemListTextScale, -6, 0);
         this.rendering.nameRange = Mth.clamp(this.rendering.nameRange, 4, 24);
         this.rendering.servuxSyncRange = Mth.clamp(this.rendering.servuxSyncRange, 16, 256);
+        this.rendering.servuxSyncTimeout = Mth.clamp(this.rendering.servuxSyncTimeout, 5, 120);
+        this.rendering.servuxSyncRequestRate = Mth.clamp(this.rendering.servuxSyncRequestRate, 1, 50);
         if (this.storage.storageBackend == null) this.storage.storageBackend = Type.NBT;
     }
 }

@@ -52,7 +52,6 @@ public class ServuxContainerSync {
     private int totalContainers = 0;
     private int processedContainers = 0;
     private long syncStartTime = 0;
-    private static final long SYNC_TIMEOUT_MS = 30000;
     
     private final ExecutorService scanExecutor = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "ChestTracker-ServuxScanner");
@@ -356,14 +355,14 @@ public class ServuxContainerSync {
             return;
         }
 
-        if (System.currentTimeMillis() - syncStartTime > SYNC_TIMEOUT_MS) {
+        if (System.currentTimeMillis() - syncStartTime > getSyncTimeoutMs()) {
             ChestTracker.LOGGER.warn("ServuxContainerSync: sync timeout");
             sendChatMessage(Component.translatable("chesttracker.servux.syncTimeout"));
             resetSync();
             return;
         }
 
-        int requestsPerTick = 5;
+        int requestsPerTick = ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncRequestRate;
         int sent = 0;
 
         Iterator<BlockPos> iterator = pendingRequests.iterator();
@@ -473,6 +472,10 @@ public class ServuxContainerSync {
         resetSync();
     }
 
+    private long getSyncTimeoutMs() {
+        return ChestTrackerConfig.INSTANCE.instance().rendering.servuxSyncTimeout * 1000L;
+    }
+
     private void resetSync() {
         isSyncing = false;
         pendingRequests.clear();
@@ -487,7 +490,7 @@ public class ServuxContainerSync {
             return;
         }
 
-        if (System.currentTimeMillis() - syncStartTime > SYNC_TIMEOUT_MS) {
+        if (System.currentTimeMillis() - syncStartTime > getSyncTimeoutMs()) {
             ChestTracker.LOGGER.warn("ServuxContainerSync: sync timeout");
             sendChatMessage(Component.translatable("chesttracker.servux.syncTimeout"));
             resetSync();
