@@ -44,6 +44,7 @@
   "chesttracker.gui.modSettings": "更改模组设置",
   "chesttracker.gui.openMemoryManager": "打开库存管理器",
   "chesttracker.gui.memoryBankSettings": "更改库存设置",
+  "chesttracker.gui.syncContainers": "从Servux同步容器",
   "chesttracker.gui.narration.drag": "点击并拖动",
   "chesttracker.gui.memoryManager": "管理库存",
   "chesttracker.gui.memoryManager.search": "搜索库存",
@@ -153,6 +154,8 @@
   "chesttracker.config.inventoryButton.export.description": "是否显示自定义按钮位置的导出按钮。文件放置在%s中",
   "chesttracker.config.rendering": "渲染",
   "chesttracker.config.rendering.nameRenderRange": "渲染范围名称",
+  "chesttracker.config.rendering.servuxSyncRange": "Servux容器同步范围",
+  "chesttracker.config.rendering.servuxSyncRange.description": "定义Servux容器同步的最大距离。范围：[16, 256] 方块",
   "chesttracker.config.rendering.displayContainerNames": "显示容器名称",
   "chesttracker.config.rendering.displayContainerNames.description": "是否在世界中的容器上方显示名称。这可以在兼容性下按每个库存进行覆盖",
   "chesttracker.config.dev": "开发工具",
@@ -190,5 +193,15 @@
   "chesttracker.config.compatibility.litematica.countNearbyMaterials.description1": "Whether to add materials in nearby containers to Litematica's material calculations.",
   "chesttracker.config.compatibility.litematica.countNearbyMaterials.description2": "The range is 48 blocks from the player.",
   "chesttracker.config.searchables.required": "需要搜索对象",
-  "chesttracker.config.searchables.notInstalled": "未加载搜索对象"
+  "chesttracker.config.searchables.notInstalled": "未加载搜索对象",
+  "chesttracker.servux.syncAlreadyInProgress": "同步已在进行中。",
+  "chesttracker.servux.noServux": "在此服务器上未检测到Servux服务器。",
+  "chesttracker.servux.noMemoryBank": "未加载库存。请先加载一个。",
+  "chesttracker.servux.noWorld": "未加载世界。",
+  "chesttracker.servux.syncStarting": "开始Servux同步...",
+  "chesttracker.servux.syncProgress": "Servux同步: %s",
+  "chesttracker.servux.syncComplete": "Servux同步完成！已保存 %s/%s 个容器。",
+  "chesttracker.servux.syncTimeout": "Servux同步超时。",
+  "chesttracker.servux.syncError": "Servux同步期间出错。",
+  "chesttracker.servux.noContainersFound": "未找到可同步的容器。"
 }

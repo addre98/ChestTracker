@@ -10,6 +10,8 @@
   "chesttracker.inventoryButton.rename": "Rename Container",
   "chesttracker.inventoryButton.rename.remove": "Remove",
   "chesttracker.inventoryButton.rename.clientOnlyWarning": "This will only rename the container on your client, not the server.",
+  "chesttracker.inventoryButton.blockLabel": "Block Container Name",
+  "chesttracker.inventoryButton.unblockLabel": "Unblock Container Name",
   "chesttracker.inventoryButton.forget": "Forget",
   "chesttracker.inventoryButton.rememberContainer.remember": "Remember Container",
   "chesttracker.inventoryButton.rememberContainer.block": "Don't Remember Container",
@@ -48,6 +50,7 @@
   "chesttracker.gui.modSettings": "Change Mod Settings",
   "chesttracker.gui.openMemoryManager": "Open Memory Manager",
   "chesttracker.gui.memoryBankSettings": "Change Memory Bank Settings",
+  "chesttracker.gui.syncContainers": "Sync Containers from Servux",
   "chesttracker.gui.narration.drag": "Click and drag",
 
   "chesttracker.gui.memoryManager": "Manage Memory Banks",
@@ -164,6 +167,8 @@
   "chesttracker.config.inventoryButton.export.description": "Whether to show an export button for custom button positions. Files get placed in %s.",
   "chesttracker.config.rendering": "Rendering",
   "chesttracker.config.rendering.nameRenderRange": "Name Render Range",
+  "chesttracker.config.rendering.servuxSyncRange": "Servux Container Sync Range",
+  "chesttracker.config.rendering.servuxSyncRange.description": "Defines the maximum range for Servux container sync. Range: [16, 256] blocks",
   "chesttracker.config.rendering.displayContainerNames": "Show Container Names",
   "chesttracker.config.rendering.displayContainerNames.description": "Whether to show names above containers in the world. This can be overridden per memory bank, under Compatibility.",
   "chesttracker.config.dev": "Developer Utils",
@@ -203,5 +208,15 @@
   "chesttracker.config.compatibility.litematica.countNearbyMaterials.description1": "Whether to add materials in nearby containers to Litematica's material calculations.",
   "chesttracker.config.compatibility.litematica.countNearbyMaterials.description2": "The range is 48 blocks from the player.",
   "chesttracker.config.searchables.required": "Requires Searchables.",
-  "chesttracker.config.searchables.notInstalled": "Searchables not loaded."
+  "chesttracker.config.searchables.notInstalled": "Searchables not loaded.",
+  "chesttracker.servux.syncAlreadyInProgress": "A sync is already in progress.",
+  "chesttracker.servux.noServux": "No Servux server detected on this server.",
+  "chesttracker.servux.noMemoryBank": "No Memory Bank loaded. Please load one first.",
+  "chesttracker.servux.noWorld": "No world loaded.",
+  "chesttracker.servux.syncStarting": "Starting Servux sync...",
+  "chesttracker.servux.syncProgress": "Servux Sync: %s",
+  "chesttracker.servux.syncComplete": "Servux sync complete! Saved %s/%s containers.",
+  "chesttracker.servux.syncTimeout": "Servux sync timed out.",
+  "chesttracker.servux.syncError": "Error during Servux sync.",
+  "chesttracker.servux.noContainersFound": "No containers found to sync."
 }

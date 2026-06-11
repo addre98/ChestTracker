@@ -100,6 +100,9 @@ public class ChestTrackerConfig {
     public static class Rendering {
         @SerialEntry(comment = "Name Render Range. Range: [4, 24] blocks")
         public int nameRange = 12;
+
+        @SerialEntry(comment = "Servux Container Sync Range. Range: [16, 256] blocks")
+        public int servuxSyncRange = 64;
     }
 
     public static class Debug {
@@ -153,6 +156,7 @@ public class ChestTrackerConfig {
         this.gui.gridHeight = Mth.clamp(this.gui.gridHeight, GuiConstants.MIN_GRID_ROWS, GuiConstants.MAX_GRID_HEIGHT);
         this.gui.itemListTextScale = Mth.clamp(this.gui.itemListTextScale, -6, 0);
         this.rendering.nameRange = Mth.clamp(this.rendering.nameRange, 4, 24);
+        this.rendering.servuxSyncRange = Mth.clamp(this.rendering.servuxSyncRange, 16, 256);
         if (this.storage.storageBackend == null) this.storage.storageBackend = Type.NBT;
     }
 }

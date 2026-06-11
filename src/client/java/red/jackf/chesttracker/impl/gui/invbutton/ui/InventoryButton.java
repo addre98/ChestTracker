@@ -77,6 +77,7 @@ public class InventoryButton extends AbstractWidget {
                 MemoryLocation location = target.get();
                 this.secondaryButtons.add(new RememberContainerButton(bank, location));
                 this.secondaryButtons.add(new RenameButton(parent, bank, location));
+                this.secondaryButtons.add(new BlockLabelButton(bank, location));
             }
         }
 
